@@ -1,0 +1,130 @@
+from fastapi import FastAPI
+from database import get_connection
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(title="Tracer Intelligence API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def root():
+    return {"status": "Tracer Intelligence API is running"}
+
+@app.get("/jobs/recent")
+def recent_jobs(limit: int = 20):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT title, company, location, posted_at, source_url
+        FROM job_postings
+        ORDER BY posted_at DESC, scraped_at DESC
+        LIMIT %s
+    """, (limit,))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    jobs = []
+    for row in rows:
+        jobs.append({
+            "title":      row[0],
+            "company":    row[1],
+            "location":   row[2],
+            "posted_at":  str(row[3]) if row[3] else None,
+            "source_url": row[4],
+        })
+    return jobs
+
+@app.get("/companies/trending")
+def trending_companies(days: int = 30, limit: int = 10):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT company, COUNT(*) as job_count
+        FROM job_postings
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '%s days'
+        GROUP BY company
+        ORDER BY job_count DESC
+        LIMIT %s
+    """, (days, limit))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [{"company": row[0], "job_count": row[1]} for row in rows]
+
+
+@app.get("/jobs/search")
+def search_jobs(keyword: str, limit: int = 20):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT title, company, location, posted_at, source_url
+        FROM job_postings
+        WHERE title ILIKE %s
+           OR description ILIKE %s
+           OR company ILIKE %s
+        ORDER BY posted_at DESC
+        LIMIT %s
+    """, (f"%{keyword}%", f"%{keyword}%", f"%{keyword}%", limit))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "title":      row[0],
+            "company":    row[1],
+            "location":   row[2],
+            "posted_at":  str(row[3]) if row[3] else None,
+            "source_url": row[4],
+        }
+        for row in rows
+    ]
+
+@app.get("/companies/{company_name}/jobs")
+def company_jobs(company_name: str, limit: int = 50):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT title, company, location, posted_at, source_url
+        FROM job_postings
+        WHERE company ILIKE %s
+        ORDER BY posted_at DESC
+        LIMIT %s
+    """, (f"%{company_name}%", limit))
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "title":      row[0],
+            "company":    row[1],
+            "location":   row[2],
+            "posted_at":  str(row[3]) if row[3] else None,
+            "source_url": row[4],
+        }
+        for row in rows
+    ]
+
+@app.get("/stats/overview")
+def stats_overview():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT posted_at, COUNT(*) as count
+        FROM job_postings
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '60 days'
+        GROUP BY posted_at
+        ORDER BY posted_at ASC
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [{"date": str(row[0]), "jobs": row[1]} for row in rows]
