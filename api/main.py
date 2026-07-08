@@ -5,7 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Tracer Intelligence API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://tracer-intelligence.vercel.app",
+    ],
     allow_methods=["GET"],
     allow_headers=["*"],
 )
@@ -166,3 +169,4 @@ def stats_metrics():
         "companies_hiring": companies_hiring,
         "total_companies": total_companies
     }
+
