@@ -19,7 +19,6 @@ class BdjobsSpider(scrapy.Spider):
             self.logger.info("No more jobs, stopping.")
             return
 
-        # Extract current page number from the URL
         page = int(response.url.split("pg=")[1].split("&")[0])
         self.logger.info(f"Page {page}: found {len(jobs)} jobs")
 
@@ -35,9 +34,14 @@ class BdjobsSpider(scrapy.Spider):
             item["description"] = job.get("jobDescription", "")
 
             salary = job.get("Salary", {})
-            item["salary_raw"] = salary.get("SalaryRange") or ""
-            item["salary_min"] = salary.get("MinSalary") or None
-            item["salary_max"] = salary.get("MaxSalary") or None
+            if isinstance(salary, dict):
+                item["salary_raw"] = salary.get("SalaryRange") or ""
+                item["salary_min"] = salary.get("MinSalary") or None
+                item["salary_max"] = salary.get("MaxSalary") or None
+            else:
+                item["salary_raw"] = str(salary) if salary else ""
+                item["salary_min"] = None
+                item["salary_max"] = None
 
             raw_deadline = job.get("deadlineDB", "")
             item["deadline"] = raw_deadline[:10] if raw_deadline else None

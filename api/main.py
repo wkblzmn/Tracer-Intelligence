@@ -145,9 +145,16 @@ def stats_metrics():
 
     cursor.execute("""
         SELECT COUNT(*) FROM job_postings
-        WHERE posted_at >= CURRENT_DATE - INTERVAL '60 days'
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '7 days'
     """)
-    new_this_week = cursor.fetchone()[0]
+    this_week = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*) FROM job_postings
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '14 days'
+        AND posted_at < CURRENT_DATE - INTERVAL '7 days'
+    """)
+    last_week = cursor.fetchone()[0]
 
     cursor.execute("""
         SELECT COUNT(DISTINCT company) FROM job_postings
@@ -163,9 +170,13 @@ def stats_metrics():
     cursor.close()
     conn.close()
 
+    week_change = round(((this_week - last_week) / last_week * 100), 1) if last_week > 0 else 0
+
     return {
         "active_postings": active,
-        "new_this_week": new_this_week,
+        "new_this_week": this_week,
+        "last_week": last_week,
+        "week_change": week_change,
         "companies_hiring": companies_hiring,
         "total_companies": total_companies
     }
