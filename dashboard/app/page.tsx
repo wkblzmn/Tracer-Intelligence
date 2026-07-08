@@ -1,4 +1,5 @@
 import JobsChart from "./components/JobsChart"
+import MetricCard from "./components/MetricCard"
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -20,6 +21,13 @@ interface DataPoint {
   jobs: number
 }
 
+interface Metrics {
+  active_postings: number
+  new_this_week: number
+  companies_hiring: number
+  total_companies: number
+}
+
 async function getRecentJobs(): Promise<Job[]> {
   const res = await fetch(`${API}/jobs/recent?limit=20`, { cache: "no-store" })
   return res.json()
@@ -35,17 +43,42 @@ async function getOverview(): Promise<DataPoint[]> {
   return res.json()
 }
 
+async function getMetrics(): Promise<Metrics> {
+  const res = await fetch(`${API}/stats/metrics`, { cache: "no-store" })
+  return res.json()
+}
+
 export default async function HomePage() {
-  const [jobs, companies, overview] = await Promise.all([
+  const [jobs, companies, overview, metrics] = await Promise.all([
     getRecentJobs(),
     getTrendingCompanies(),
     getOverview(),
+    getMetrics(),
   ])
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-2">Tracer Intelligence</h1>
       <p className="text-gray-500 mb-8">Bangladesh Labor Market Intelligence</p>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <MetricCard
+          label="Active Postings"
+          value={metrics.active_postings}
+        />
+        <MetricCard
+          label="Postings (60 days)"
+          value={metrics.new_this_week}
+        />
+        <MetricCard
+          label="Companies Hiring"
+          value={metrics.companies_hiring}
+        />
+        <MetricCard
+          label="Total Companies"
+          value={metrics.total_companies}
+        />
+      </div>
 
       <section className="mb-10">
         <h2 className="text-xl font-semibold mb-1">Hiring Activity</h2>

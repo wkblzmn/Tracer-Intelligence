@@ -128,3 +128,41 @@ def stats_overview():
     conn.close()
 
     return [{"date": str(row[0]), "jobs": row[1]} for row in rows]
+
+@app.get("/stats/metrics")
+def stats_metrics():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT COUNT(*) FROM job_postings
+        WHERE deadline >= CURRENT_DATE OR deadline IS NULL
+    """)
+    active = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(*) FROM job_postings
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '60 days'
+    """)
+    new_this_week = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(DISTINCT company) FROM job_postings
+        WHERE posted_at >= CURRENT_DATE - INTERVAL '60 days'
+    """)
+    companies_hiring = cursor.fetchone()[0]
+
+    cursor.execute("""
+        SELECT COUNT(DISTINCT company) FROM job_postings
+    """)
+    total_companies = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+
+    return {
+        "active_postings": active,
+        "new_this_week": new_this_week,
+        "companies_hiring": companies_hiring,
+        "total_companies": total_companies
+    }
