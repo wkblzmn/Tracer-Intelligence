@@ -1,13 +1,32 @@
 import type { Metadata } from "next"
-import { Geist } from "next/font/google"
+import { IBM_Plex_Sans, Fraunces, Source_Serif_4 } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
 
-const geist = Geist({ subsets: ["latin"] })
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
+})
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-wordmark",
+})
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-serif",
+})
 
 export const metadata: Metadata = {
   title: "Tracer Intelligence",
   description: "Bangladesh Labor Market Intelligence",
+  icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
@@ -16,11 +35,21 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={geist.className}>
-      <body className="min-h-screen bg-white text-gray-900">
+    <html
+      lang="en"
+      className={`${ibmPlexSans.variable} ${fraunces.variable} ${sourceSerif.variable}`}
+    >
+      <body
+        className="min-h-screen bg-white text-gray-900"
+        style={{ fontFamily: "var(--font-sans), sans-serif" }}
+      >
         <nav className="border-b border-gray-200 px-4 py-3">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <Link href="/" className="font-bold text-lg">
+            <Link
+              href="/"
+              style={{ fontFamily: "var(--font-wordmark), serif" }}
+              className="text-xl font-bold tracking-tight"
+            >
               Tracer Intelligence
             </Link>
             <div className="flex gap-6 text-sm">

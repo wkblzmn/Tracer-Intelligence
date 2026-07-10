@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-const API = "http://127.0.0.1:8000"
+
 
 interface Job {
   title: string
@@ -25,7 +25,7 @@ export default function SearchPage() {
       }
       setLoading(true)
       const res = await fetch(
-        `${API}/jobs/search?keyword=${encodeURIComponent(keyword)}`
+        `/api/jobs/search?keyword=${encodeURIComponent(keyword)}`
       )
       const data = await res.json()
       setJobs(data)

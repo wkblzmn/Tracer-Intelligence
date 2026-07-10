@@ -29,22 +29,22 @@ interface Metrics {
 }
 
 async function getRecentJobs(): Promise<Job[]> {
-  const res = await fetch(`${API}/jobs/recent?limit=20`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/jobs/recent?limit=20`, { cache: "no-store" })
   return res.json()
 }
 
 async function getTrendingCompanies(): Promise<TrendingCompany[]> {
-  const res = await fetch(`${API}/companies/trending?limit=10`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/companies/trending?limit=10`, { cache: "no-store" })
   return res.json()
 }
 
 async function getOverview(): Promise<DataPoint[]> {
-  const res = await fetch(`${API}/stats/overview`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/overview`, { cache: "no-store" })
   return res.json()
 }
 
 async function getMetrics(): Promise<Metrics> {
-  const res = await fetch(`${API}/stats/metrics`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/metrics`, { cache: "no-store" })
   return res.json()
 }
 
@@ -62,22 +62,10 @@ export default async function HomePage() {
       <p className="text-gray-500 mb-8">Bangladesh Labor Market Intelligence</p>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        <MetricCard
-          label="Active Postings"
-          value={metrics.active_postings}
-        />
-        <MetricCard
-          label="Postings (60 days)"
-          value={metrics.new_this_week}
-        />
-        <MetricCard
-          label="Companies Hiring"
-          value={metrics.companies_hiring}
-        />
-        <MetricCard
-          label="Total Companies"
-          value={metrics.total_companies}
-        />
+        <MetricCard label="Active Postings" value={metrics.active_postings} />
+        <MetricCard label="Postings (60 days)" value={metrics.new_this_week} />
+        <MetricCard label="Companies Hiring" value={metrics.companies_hiring} />
+        <MetricCard label="Total Companies" value={metrics.total_companies} />
       </div>
 
       <section className="mb-10">
@@ -87,7 +75,6 @@ export default async function HomePage() {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
         <section className="lg:col-span-2">
           <h2 className="text-xl font-semibold mb-4">Recent Postings</h2>
           <div className="space-y-3">
@@ -127,7 +114,6 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-
       </div>
     </main>
   )
