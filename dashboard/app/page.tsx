@@ -1,5 +1,6 @@
 import JobsChart from "./components/JobsChart"
 import MetricCard from "./components/MetricCard"
+import CategoryChart from "./components/CategoryChart"
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -28,6 +29,13 @@ interface Metrics {
   total_companies: number
 }
 
+interface CategoryData {
+  category: string
+  this_period: number
+  prev_period: number
+  change: number | null
+}
+
 async function getRecentJobs(): Promise<Job[]> {
   const res = await fetch(`${API}/api/jobs/recent?limit=20`, { cache: "no-store" })
   return res.json()
@@ -48,12 +56,18 @@ async function getMetrics(): Promise<Metrics> {
   return res.json()
 }
 
+async function getCategories(): Promise<CategoryData[]> {
+  const res = await fetch(`${API}/api/stats/categories`, { cache: "no-store" })
+  return res.json()
+}
+
 export default async function HomePage() {
-  const [jobs, companies, overview, metrics] = await Promise.all([
+  const [jobs, companies, overview, metrics, categories] = await Promise.all([
     getRecentJobs(),
     getTrendingCompanies(),
     getOverview(),
     getMetrics(),
+    getCategories(),
   ])
 
   return (
@@ -74,25 +88,11 @@ export default async function HomePage() {
         <JobsChart data={overview} />
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2">
-          <h2 className="text-xl font-semibold mb-4">Recent Postings</h2>
-          <div className="space-y-3">
-            {jobs.map((job, i) => (
-              <a
-                key={i}
-                href={job.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-4 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors"
-              >
-                <div className="font-medium">{job.title}</div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {job.company} · {job.location ?? "Bangladesh"} · {job.posted_at}
-                </div>
-              </a>
-            ))}
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <section>
+          <h2 className="text-xl font-semibold mb-1">Category Momentum</h2>
+          <p className="text-sm text-gray-400 mb-4">Change vs previous 30 days</p>
+          <CategoryChart data={categories} />
         </section>
 
         <section>
@@ -115,6 +115,26 @@ export default async function HomePage() {
           </div>
         </section>
       </div>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Recent Postings</h2>
+        <div className="space-y-3">
+          {jobs.map((job, i) => (
+            <a
+              key={i}
+              href={job.source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-4 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors"
+            >
+              <div className="font-medium">{job.title}</div>
+              <div className="text-sm text-gray-500 mt-1">
+                {job.company} · {job.location ?? "Bangladesh"} · {job.posted_at}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }
