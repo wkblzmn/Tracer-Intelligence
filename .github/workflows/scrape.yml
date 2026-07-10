@@ -1,4 +1,4 @@
-name: Daily Bdjobs Scrape
+name: Daily Scrape
 
 on:
   schedule:
@@ -20,11 +20,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install scrapy psycopg2-binary python-dotenv
+          pip install scrapy psycopg2-binary python-dotenv playwright
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
 
-      - name: Run scraper
+      - name: Run Bdjobs scraper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
         run: |
           python -m scrapy crawl bdjobs
+
+      - name: Run Shomvob scraper
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: tracer_intelligence
+        run: |
+          python shomvob.py
