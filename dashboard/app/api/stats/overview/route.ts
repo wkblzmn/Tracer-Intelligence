@@ -11,6 +11,11 @@ export async function GET() {
   )
 
   return NextResponse.json(
-    rows.map(r => ({ date: r.posted_at, jobs: Number(r.jobs) }))
+    rows.map(r => ({ 
+      date: r.posted_at instanceof Date 
+        ? r.posted_at.toISOString().slice(0, 10)
+        : String(r.posted_at).slice(0, 10),
+      jobs: Number(r.jobs) 
+    }))
   )
 }
