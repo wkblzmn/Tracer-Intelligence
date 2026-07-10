@@ -37,3 +37,10 @@ jobs:
         working-directory: tracer_intelligence
         run: |
           python shomvob.py
+
+      - name: Run Skilljobs scraper
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        working-directory: tracer_intelligence
+        run: |
+          python -m scrapy crawl skilljobs
