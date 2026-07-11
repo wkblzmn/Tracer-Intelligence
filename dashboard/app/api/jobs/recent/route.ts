@@ -6,10 +6,16 @@ export async function GET(request: NextRequest) {
   
   const { rows } = await pool.query(
     `SELECT title, company, location, posted_at, source_url
-     FROM job_postings
-     ORDER BY posted_at DESC, scraped_at DESC
-     LIMIT $1`,
+     FROM job_postings ORDER BY posted_at DESC, scraped_at DESC LIMIT $1`,
     [limit]
+  )
+  return NextResponse.json(
+    rows.map(r => ({
+      ...r,
+      posted_at: r.posted_at instanceof Date
+        ? r.posted_at.toISOString().slice(0, 10)
+        : r.posted_at,
+    }))
   )
   
   return NextResponse.json(rows)

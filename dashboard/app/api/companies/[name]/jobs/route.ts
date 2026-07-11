@@ -19,5 +19,15 @@ export async function GET(
     [companyName]
   )
 
-  return NextResponse.json(rows)
+  return NextResponse.json(
+    rows.map(r => ({
+      ...r,
+      posted_at: r.posted_at instanceof Date
+        ? r.posted_at.toISOString().slice(0, 10)
+        : r.posted_at,
+      deadline: r.deadline instanceof Date
+        ? r.deadline.toISOString().slice(0, 10)
+        : r.deadline,
+    }))
+  )
 }
