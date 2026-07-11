@@ -17,7 +17,7 @@ export default async function CompanyPage({
   const companyName = decodeURIComponent(name)
 
   const res = await fetch(
-    `${API}/companies/${encodeURIComponent(companyName)}/jobs`,
+    `${API}/api/companies/${encodeURIComponent(companyName)}/jobs`,
     { cache: "no-store" }
   )
   const jobs: Job[] = await res.json()
