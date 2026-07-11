@@ -9,9 +9,9 @@ export async function GET(request: NextRequest) {
     `SELECT company, COUNT(*) as job_count
      FROM job_postings
      WHERE posted_at >= CURRENT_DATE - ($1 || ' days')::INTERVAL
-     GROUP BY company
-     ORDER BY job_count DESC
-     LIMIT $2`,
+       AND is_confidential = FALSE
+       AND duplicate_of IS NULL
+     GROUP BY company ORDER BY job_count DESC LIMIT $2`,
     [days, limit]
   )
 

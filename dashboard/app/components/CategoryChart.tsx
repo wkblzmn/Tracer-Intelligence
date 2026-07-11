@@ -35,12 +35,7 @@ export default function CategoryChart({ data }: { data: CategoryData[] }) {
           tick={{ fontSize: 11 }}
           tickFormatter={(v) => `${v}%`}
         />
-        <YAxis
-          type="category"
-          dataKey="category"
-          tick={{ fontSize: 11 }}
-          width={180}
-        />
+        <YAxis type='category' dataKey='category' tick={{ fontSize:11 }} width={220} />
         <Tooltip
           formatter={(value) => [`${value}%`, "Change vs prev 30d"]}
         />

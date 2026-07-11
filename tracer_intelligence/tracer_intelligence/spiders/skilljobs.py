@@ -33,7 +33,7 @@ class SkilljobsSpider(scrapy.Spider):
             item["dedupe_key"]  = f"skilljobs_{job['id']}"
             item["title"]       = job.get("title", "")
             item["company"]     = company.get("name", "") or job.get("company_name", "")
-            item["location"]    = job.get("division", "")
+            item["location"]    = job.get("location", "")
             item["category"]    = job.get("type", "")
 
             min_sal = job.get("min_salary", 0)
