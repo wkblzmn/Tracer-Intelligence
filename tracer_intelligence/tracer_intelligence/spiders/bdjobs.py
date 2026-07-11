@@ -68,6 +68,10 @@ CATEGORIES = {
     92: "Physiotherapist",
 }
 
+import re
+
+CONFIDENTIAL_PATTERN = re.compile(r'^(a reputed|a group of compan|posted by anonymous)', re.IGNORECASE)
+
 API_URL = (
     "https://api.bdjobs.com/Jobs/api/JobSearch/GetJobSearch"
     "?pg={page}&rpp=50&isPro=0&ToggleJobs=true&isFresher=false"
@@ -95,7 +99,8 @@ class BdjobsSpider(scrapy.Spider):
             item["source_url"]  = f"https://bdjobs.com/h/details/{job['Jobid']}"
             item["dedupe_key"]  = f"bdjobs_{job['Jobid']}"
             item["title"]       = job.get("jobTitle", "")
-            item["company"]     = job.get("companyName", "")
+            item['company']     = job.get('companyName', '')
+            item['is_confidential'] = bool(CONFIDENTIAL_PATTERN.match(item['company']))
             item["location"]    = job.get("location", "")
 
             cat_id = job.get("Cat_id", 0)

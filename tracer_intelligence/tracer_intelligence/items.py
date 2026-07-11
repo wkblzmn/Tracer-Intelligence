@@ -6,6 +6,7 @@ class JobPostingItem(scrapy.Item):
     dedupe_key  = scrapy.Field()
     title       = scrapy.Field()
     company     = scrapy.Field()
+    is_confidential = scrapy.Field()
     location    = scrapy.Field()
     category    = scrapy.Field()
     salary_raw  = scrapy.Field()

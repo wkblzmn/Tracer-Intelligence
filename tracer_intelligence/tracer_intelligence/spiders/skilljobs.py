@@ -1,5 +1,6 @@
 import scrapy
 import json
+from datetime import datetime
 from tracer_intelligence.items import JobPostingItem
 
 BASE_URL = "https://studio.skill.jobs/api/job_search/?limit=25&offset={offset}"
@@ -43,11 +44,16 @@ class SkilljobsSpider(scrapy.Spider):
 
             item["description"] = f"{job.get('workplace', '')} | {job.get('level', '')}"
 
-            end_date = job.get("end_date", "")
-            item["deadline"]    = end_date[:10] if end_date else None
+            def parse_skilljobs_date(raw):
+                if not raw:
+                    return None
+                try:
+                    return datetime.strptime(raw, '%b %d, %Y').strftime('%Y-%m-%d')
+                except ValueError:
+                    return None
 
-            created = job.get("created_at", "")
-            item["posted_at"]   = created[:10] if created else None
+            item['deadline']    = parse_skilljobs_date(job.get('end_date', ''))
+            item['posted_at']   = parse_skilljobs_date(job.get('created_at', ''))
 
             yield item
 
