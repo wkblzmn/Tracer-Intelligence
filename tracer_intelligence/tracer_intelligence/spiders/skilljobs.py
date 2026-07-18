@@ -38,7 +38,7 @@ class SkilljobsSpider(scrapy.Spider):
 
             min_sal = job.get("min_salary", 0)
             max_sal = job.get("max_salary", 0)
-            item["salary_raw"]  = "" if job.get("isNegotiable") else f"{min_sal}-{max_sal}"
+            item["salary_raw"]  = "" if job.get("isNegotiable") or (not min_sal and not max_sal) else f"{min_sal}-{max_sal}"
             item["salary_min"]  = int(min_sal) if min_sal else None
             item["salary_max"]  = int(max_sal) if max_sal else None
 

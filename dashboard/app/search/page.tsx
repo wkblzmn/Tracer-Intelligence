@@ -75,7 +75,7 @@ export default function SearchPage() {
     }, 400)
 
     return () => clearTimeout(timeout)
-  }, [keyword, location, category, datePreset, salaryMin, salaryMax])
+  }, [keyword, location, category, datePreset, salaryMin, salaryMax, hasAnyFilter])
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
