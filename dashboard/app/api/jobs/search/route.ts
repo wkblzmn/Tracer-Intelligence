@@ -47,6 +47,14 @@ export async function GET(request: NextRequest) {
     conditions.push(`salary_min <= $${values.length}`)
   }
 
+  const whereClause = conditions.join(" AND ")
+
+  const { rows: countRows } = await pool.query(
+    `SELECT COUNT(*) AS total FROM job_postings WHERE ${whereClause}`,
+    values
+  )
+  const total = Number(countRows[0].total)
+
   values.push(limit)
   const limitIndex = values.length
 
@@ -54,17 +62,18 @@ export async function GET(request: NextRequest) {
     `SELECT title, company, location, category, salary_raw, salary_min, salary_max,
             posted_at, deadline, source_url
      FROM job_postings
-     WHERE ${conditions.join(" AND ")}
+     WHERE ${whereClause}
      ORDER BY posted_at DESC
      LIMIT $${limitIndex}`,
     values
   )
 
-  return NextResponse.json(
-    rows.map(r => ({
+  return NextResponse.json({
+    total,
+    jobs: rows.map(r => ({
       ...r,
       posted_at: r.posted_at instanceof Date ? r.posted_at.toISOString().slice(0, 10) : r.posted_at,
       deadline: r.deadline instanceof Date ? r.deadline.toISOString().slice(0, 10) : r.deadline,
-    }))
-  )
+    })),
+  })
 }
