@@ -104,7 +104,11 @@ class BdjobsSpider(scrapy.Spider):
             item["location"]    = job.get("location", "")
 
             cat_id = job.get("Cat_id", 0)
-            item["category"]    = CATEGORIES.get(cat_id, str(cat_id))
+            try:
+                cat_id = int(cat_id)
+            except (TypeError, ValueError):
+                cat_id = 0
+            item["category"]    = CATEGORIES.get(cat_id, "Uncategorized")
 
             item["description"] = job.get("jobDescription", "")
 

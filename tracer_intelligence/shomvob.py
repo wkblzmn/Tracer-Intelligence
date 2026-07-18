@@ -9,6 +9,26 @@ load_dotenv()
 TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNob212b2JUZWNoQVBJVXNlciIsImlhdCI6MTY1OTg5NTcwOH0.IOdKen62ye0N9WljM_cj3Xffmjs3dXUqoJRZ_1ezd4Q"
 API_URL = "https://backend-api.shomvob.co/api/v2/jobpost/get-active-job-list-guest"
 
+CATEGORY_MAP = {
+    "Sales/Marketing": "Marketing/Sales",
+    "Call Center": "Customer Service/Call Centre",
+    "Deliveryman": "Delivery Man",
+    "Garments - Production/Operator/Technician": "Garments technician/Machine operator",
+    "Education/Training/Consultant": "Education/Training",
+    "Management Staff": "General Management/Admin",
+    "Engineer": "Engineer/Architect",
+    "Accounts/Finance/Audit": "Accounting/Finance",
+    "Accounts & Finance": "Accounting/Finance",
+    "Computer Operator/Data Entry Operator": "Data Entry/Operator/BPO",
+    "Graphics/Video Editor": "Design/Creative",
+    "Graphics": "Design/Creative",
+    "Construction": "Electrician/Construction/Repair",
+    "Transportation": "Driving/Motor Technician",
+    "Human Resource Management (HR)": "HR/Org. Development",
+    "Hospitality/ Travel/ Tourism": "Hospitality/Travel/Tourism",
+    "Healthcare/Medical/Hospital": "Healthcare/Medical",
+}
+
 
 def fetch_jobs():
     with sync_playwright() as p:
@@ -75,7 +95,7 @@ def save_jobs(jobs):
             job.get("job_title", "") or job.get("job_type_en", ""),
             job.get("company_name", ""),
             job.get("job_locations_en", ""),
-            job.get("main_category", ""),
+            CATEGORY_MAP.get(job.get("main_category", ""), job.get("main_category", "")),
             job.get("salary_range", "") or "",
             int(salary_start) if salary_start else None,
             int(salary_end) if salary_end else None,
