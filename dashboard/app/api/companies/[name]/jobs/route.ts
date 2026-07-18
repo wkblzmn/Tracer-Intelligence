@@ -10,7 +10,7 @@ export async function GET(
 
   const { rows } = await pool.query(
     `SELECT title, location, category, salary_raw, salary_min, salary_max,
-            description, deadline, posted_at, source, source_url
+            description, deadline, posted_at, source, source_url, last_seen_at
      FROM job_postings
      WHERE lower(trim(company)) = lower(trim($1))
        AND is_confidential = FALSE

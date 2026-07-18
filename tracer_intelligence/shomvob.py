@@ -81,13 +81,13 @@ def save_jobs(jobs):
             INSERT INTO job_postings (
                 source, source_url, dedupe_key, title, company,
                 location, category, salary_raw, salary_min, salary_max,
-                description, deadline, posted_at
+                description, deadline, posted_at, last_seen_at
             ) VALUES (
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s,
-                %s, %s, %s
+                %s, %s, %s, NOW()
             )
-            ON CONFLICT (dedupe_key) DO NOTHING
+            ON CONFLICT (dedupe_key) DO UPDATE SET last_seen_at = NOW()
         """, (
             "shomvob",
             f"https://app.shomvob.co/job-details/{job['id']}",

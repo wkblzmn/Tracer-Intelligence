@@ -27,13 +27,15 @@ class PostgresPipeline:
             INSERT INTO job_postings (
                 source, source_url, dedupe_key, title, company,
                 is_confidential, location, category, salary_raw,
-                salary_min, salary_max, description, deadline, posted_at
+                salary_min, salary_max, description, deadline, posted_at,
+                last_seen_at
             ) VALUES (
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, %s,
-                %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s,
+                NOW()
             )
-            ON CONFLICT (dedupe_key) DO NOTHING
+            ON CONFLICT (dedupe_key) DO UPDATE SET last_seen_at = NOW()
         ''', (
             adapter.get('source'),
             adapter.get('source_url'),

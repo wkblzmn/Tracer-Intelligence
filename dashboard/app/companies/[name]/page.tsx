@@ -1,6 +1,7 @@
 import CompanyHistoryChart from "@/app/components/CompanyHistoryChart"
 
 const API = process.env.NEXT_PUBLIC_API_URL
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000
 
 interface Job {
   title: string
@@ -8,6 +9,7 @@ interface Job {
   location: string | null
   posted_at: string | null
   source_url: string
+  last_seen_at: string
 }
 
 function getWeekStart(dateStr: string): string {
@@ -16,6 +18,9 @@ function getWeekStart(dateStr: string): string {
   const diff = (day === 0 ? -6 : 1) - day
   d.setUTCDate(d.getUTCDate() + diff)
   return d.toISOString().slice(0, 10)
+}
+function isStillActive(lastSeenAt: string): boolean {
+  return new Date(lastSeenAt).getTime() > Date.now() - THREE_DAYS_MS
 }
 
 export default async function CompanyPage({
@@ -32,6 +37,8 @@ export default async function CompanyPage({
   )
   const jobs: Job[] = await res.json()
 
+  const activeJobs = jobs.filter((job) => isStillActive(job.last_seen_at))
+
   const weekCounts = new Map<string, number>()
   for (const job of jobs) {
     if (!job.posted_at) continue
@@ -45,7 +52,7 @@ export default async function CompanyPage({
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-1">{companyName}</h1>
-      <p className="text-gray-500 mb-8">{jobs.length} active postings</p>
+      <p className="text-gray-500 mb-8">{activeJobs.length} active postings</p>
 
       {history.length > 1 && (
         <div className="mb-8">
@@ -55,7 +62,7 @@ export default async function CompanyPage({
       )}
 
       <div className="space-y-3">
-        {jobs.map((job, i) => (
+        {activeJobs.map((job, i) => (
           <a
             key={i}
             href={job.source_url}

@@ -6,7 +6,10 @@ export async function GET(request: NextRequest) {
   
   const { rows } = await pool.query(
     `SELECT title, company, location, posted_at, source_url
-     FROM job_postings ORDER BY posted_at DESC, scraped_at DESC LIMIT $1`,
+     FROM job_postings
+     WHERE last_seen_at >= NOW() - INTERVAL '3 days'
+       AND duplicate_of IS NULL
+     ORDER BY posted_at DESC, scraped_at DESC LIMIT $1`,
     [limit]
   )
   return NextResponse.json(

@@ -4,7 +4,7 @@ import pool from "@/lib/db"
 export async function GET() {
   const { rows: [active] } = await pool.query(
     `SELECT COUNT(*) as count FROM job_postings 
-     WHERE (deadline >= CURRENT_DATE OR deadline IS NULL) 
+     WHERE last_seen_at >= NOW() - INTERVAL '3 days'
        AND duplicate_of IS NULL`
   )
   const { rows: [recent] } = await pool.query(
