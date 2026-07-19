@@ -90,7 +90,7 @@ def save_jobs(jobs):
             ON CONFLICT (dedupe_key) DO UPDATE SET last_seen_at = NOW()
         """, (
             "shomvob",
-            f"https://app.shomvob.co/job-details/{job['id']}",
+            f"https://app.shomvob.co/single-job-description/?id={job['id']}",
             f"shomvob_{job['id']}",
             job.get("job_title", "") or job.get("job_type_en", ""),
             job.get("company_name", ""),

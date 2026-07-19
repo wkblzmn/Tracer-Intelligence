@@ -9,6 +9,7 @@ interface Job {
   company: string
   location: string | null
   posted_at: string | null
+  deadline: string | null
   source_url: string
 }
 
@@ -35,6 +36,19 @@ interface CategoryData {
   prev_period: number
   change: number | null
 }
+
+function formatPostedDate(dateStr: string | null): string {
+  if (!dateStr) return "Date unknown"
+  const d = new Date(dateStr + "T00:00:00Z")
+  return `Posted ${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}`
+}
+
+function formatDeadline(dateStr: string | null): string {
+  if (!dateStr) return ""
+  const d = new Date(dateStr + "T00:00:00Z")
+  return ` · Apply by ${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}`
+}
+
 
 async function getRecentJobs(): Promise<Job[]> {
   const res = await fetch(`${API}/api/jobs/recent?limit=20`, { cache: "no-store" })
@@ -129,7 +143,8 @@ export default async function HomePage() {
             >
               <div className="font-medium">{job.title}</div>
               <div className="text-sm text-gray-500 mt-1">
-                {job.company} · {job.location ?? "Bangladesh"} · {job.posted_at}
+                {job.company} · {job.location ?? "Bangladesh"} · {formatPostedDate(job.posted_at)}
+                {formatDeadline(job.deadline)}
               </div>
             </a>
           ))}

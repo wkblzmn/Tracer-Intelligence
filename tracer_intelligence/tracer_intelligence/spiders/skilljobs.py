@@ -29,7 +29,7 @@ class SkilljobsSpider(scrapy.Spider):
             company = job.get("company_info", {}) or {}
             item = JobPostingItem()
             item["source"]      = "skilljobs"
-            item["source_url"]  = f"https://skill.jobs/job/{job.get('slug', job['id'])}"
+            item["source_url"]  = f"https://skill.jobs/jobs/{job.get('slug', job['id'])}"
             item["dedupe_key"]  = f"skilljobs_{job['id']}"
             item["title"]       = job.get("title", "")
             item["company"]     = company.get("name", "") or job.get("company_name", "")

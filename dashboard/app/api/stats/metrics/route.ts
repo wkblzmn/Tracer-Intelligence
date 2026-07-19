@@ -5,7 +5,8 @@ export async function GET() {
   const { rows: [active] } = await pool.query(
     `SELECT COUNT(*) as count FROM job_postings 
      WHERE last_seen_at >= NOW() - INTERVAL '3 days'
-       AND duplicate_of IS NULL`
+       AND duplicate_of IS NULL
+       AND link_dead = FALSE`
   )
   const { rows: [recent] } = await pool.query(
     `SELECT COUNT(*) as count FROM job_postings

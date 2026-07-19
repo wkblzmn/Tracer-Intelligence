@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const salaryMax = params.get("salaryMax")
   const limit = Number(params.get("limit") ?? 20)
 
-  const conditions: string[] = ["duplicate_of IS NULL", "last_seen_at >= NOW() - INTERVAL '3 days'"]
+  const conditions: string[] = ["duplicate_of IS NULL", "last_seen_at >= NOW() - INTERVAL '3 days'", "link_dead = FALSE"]
   const values: (string | number)[] = []
 
   if (keyword.trim()) {

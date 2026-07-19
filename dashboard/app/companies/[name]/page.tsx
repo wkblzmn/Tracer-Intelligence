@@ -8,8 +8,21 @@ interface Job {
   company: string
   location: string | null
   posted_at: string | null
+  deadline: string | null
   source_url: string
   last_seen_at: string
+}
+
+function formatPostedDate(dateStr: string | null): string {
+  if (!dateStr) return "Date unknown"
+  const d = new Date(dateStr + "T00:00:00Z")
+  return `Posted ${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}`
+}
+
+function formatDeadline(dateStr: string | null): string {
+  if (!dateStr) return ""
+  const d = new Date(dateStr + "T00:00:00Z")
+  return ` · Apply by ${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })}`
 }
 
 function getWeekStart(dateStr: string): string {
@@ -72,7 +85,8 @@ export default async function CompanyPage({
           >
             <div className="font-medium">{job.title}</div>
             <div className="text-sm text-gray-500 mt-1">
-              {job.location ?? "Bangladesh"} · {job.posted_at}
+              {job.location ?? "Bangladesh"} · {formatPostedDate(job.posted_at)}
+              {formatDeadline(job.deadline)}
             </div>
           </a>
         ))}
