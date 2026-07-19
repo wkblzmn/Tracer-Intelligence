@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
 CATEGORY_MAP = {
     "Sales/Marketing": "Marketing/Sales",
     "Call Center": "Customer Service/Call Centre",
@@ -59,6 +58,18 @@ def fetch_jobs():
         return jobs_data
 
 
+def build_description(job):
+    # Combine the real text fields. English fields first (skill-bearing), then
+    # the mixed Bangla/English job_description. English skill terms survive the
+    # Bangla text, so the dictionary extractor still works.
+    parts = [
+        job.get("job_responsibilities_en", "") or "",
+        job.get("other_requirement_en", "") or "",
+        job.get("job_description", "") or "",
+    ]
+    return "\n".join(p for p in parts if p.strip())
+
+
 def save_jobs(jobs):
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
@@ -86,7 +97,9 @@ def save_jobs(jobs):
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, NOW()
             )
-            ON CONFLICT (dedupe_key) DO UPDATE SET last_seen_at = NOW()
+            ON CONFLICT (dedupe_key) DO UPDATE SET
+                last_seen_at = NOW(),
+                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description)
         """, (
             "shomvob",
             f"https://app.shomvob.co/single-job-description/?id={job['id']}",
@@ -98,11 +111,7 @@ def save_jobs(jobs):
             job.get("salary_range", "") or "",
             int(salary_start) if salary_start else None,
             int(salary_end) if salary_end else None,
-            (
-                f"{job.get('employment_status_en', '')} | "
-                f"{job.get('work_exp_en', '')} | "
-                f"{job.get('education_en', '')}"
-            ),
+            build_description(job),
             deadline[:10] if deadline else None,
             posted[:10] if posted else None,
         ))

@@ -35,7 +35,10 @@ class PostgresPipeline:
                 %s, %s, %s, %s, %s,
                 NOW()
             )
-            ON CONFLICT (dedupe_key) DO UPDATE SET last_seen_at = NOW()
+            ON CONFLICT (dedupe_key) DO UPDATE SET
+                last_seen_at = NOW(),
+                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description)
+            RETURNING id
         ''', (
             adapter.get('source'),
             adapter.get('source_url'),
@@ -52,5 +55,16 @@ class PostgresPipeline:
             adapter.get('deadline'),
             adapter.get('posted_at'),
         ))
+        posting_id = self.cursor.fetchone()[0]
+
+        # If the item carries employer-tagged skills (Skill.jobs), write them
+        # into the shared job_skills table keyed on this posting's id.
+        skills = adapter.get('skills')
+        if skills:
+            self.cursor.executemany(
+                "INSERT INTO job_skills (posting_id, skill) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                [(posting_id, s) for s in skills],
+            )
+
         self.conn.commit()
         return item
