@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const keyword = params.get("keyword") ?? ""
   const location = params.get("location")
   const category = params.get("category")
+  const source = params.get("source")
   const dateFrom = params.get("dateFrom")
   const dateTo = params.get("dateTo")
   const salaryMin = params.get("salaryMin")
@@ -29,6 +30,10 @@ export async function GET(request: NextRequest) {
   if (category) {
     values.push(category)
     conditions.push(`category = $${values.length}`)
+  }
+  if (source) {
+    values.push(source)
+    conditions.push(`source = $${values.length}`)
   }
   if (dateFrom) {
     values.push(dateFrom)
@@ -60,7 +65,7 @@ export async function GET(request: NextRequest) {
 
   const { rows } = await pool.query(
     `SELECT title, company, location, category, salary_raw, salary_min, salary_max,
-            posted_at, deadline, source_url
+            posted_at, deadline, source, source_url
      FROM job_postings
      WHERE ${whereClause}
      ORDER BY posted_at DESC
