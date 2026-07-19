@@ -112,7 +112,7 @@ class BdjobsSpider(scrapy.Spider):
 
             item["description"] = job.get("jobDescription", "")
 
-            ssalary = job.get("Salary", {})
+            salary = job.get("Salary", {})
             if isinstance(salary, dict):
                 item["salary_raw"] = salary.get("SalaryRange") or ""
                 item["salary_min"] = salary.get("MinSalary") or None
