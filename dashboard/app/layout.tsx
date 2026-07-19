@@ -24,41 +24,46 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   title: "Tracer Intelligence",
   description: "Bangladesh Labor Market Intelligence",
-  icons: {
-    icon: "/favicon.png",
-  },
+  icons: { icon: "/favicon.png" },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const NAV = [
+  { href: "/", label: "Home" },
+  { href: "/search", label: "Search" },
+  { href: "/skills", label: "Skills" },
+]
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${ibmPlexSans.variable} ${fraunces.variable} ${sourceSerif.variable}`}
     >
       <body
-        className="min-h-screen bg-white text-gray-900"
+        className="min-h-screen antialiased"
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
       >
-        <nav className="border-b border-gray-200 px-4 py-3">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <Link
-              href="/"
-              style={{ fontFamily: "var(--font-wordmark), serif" }}
-              className="text-xl font-bold tracking-tight"
-            >
-              Tracer Intelligence
+        <nav className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
+          <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+            <Link href="/" className="flex items-center gap-2.5">
+              <span className="h-4 w-4 rounded-[5px] bg-brand" />
+              <span
+                style={{ fontFamily: "var(--font-wordmark), serif" }}
+                className="text-lg font-bold tracking-tight text-ink"
+              >
+                Tracer Intelligence
+              </span>
             </Link>
-            <div className="flex gap-6 text-sm">
-              <Link href="/" className="text-gray-600 hover:text-gray-900">
-                Home
-              </Link>
-              <Link href="/search" className="text-gray-600 hover:text-gray-900">
-                Search
-              </Link>
+            <div className="flex gap-7 text-sm">
+              {NAV.map((n) => (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  className="text-muted hover:text-brand transition-colors"
+                >
+                  {n.label}
+                </Link>
+              ))}
             </div>
           </div>
         </nav>

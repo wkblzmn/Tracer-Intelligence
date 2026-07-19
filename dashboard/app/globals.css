@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand: #534AB7;
+  --color-brand-strong: #3F369A;
+  --color-brand-soft: #EEEDF9;
+  --color-ink: #17172A;
+  --color-muted: #6C6C7E;
+  --color-line: #E7E6F1;
+  --color-canvas: #F7F7FB;
+  --color-surface: #FFFFFF;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.8); }
+}
+.live-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot { animation: none; }
+}

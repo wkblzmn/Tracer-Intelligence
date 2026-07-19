@@ -2,20 +2,27 @@ interface MetricCardProps {
   label: string
   value: number | string
   sub?: string
+  accent?: boolean
 }
 
-export default function MetricCard({ label, value, sub }: MetricCardProps) {
+export default function MetricCard({ label, value, sub, accent }: MetricCardProps) {
   return (
-    <div className="border border-gray-200 rounded-lg p-5">
-      <div className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">
+    <div
+      className={`rounded-2xl border bg-surface p-5 ${
+        accent ? "border-brand/30" : "border-line"
+      }`}
+    >
+      <div className="mb-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted">
         {label}
       </div>
-      <div className="text-4xl font-bold tabular-nums">
+      <div
+        className={`text-[2.5rem] leading-none font-semibold tabular-nums ${
+          accent ? "text-brand" : "text-ink"
+        }`}
+      >
         {typeof value === "number" ? value.toLocaleString() : value}
       </div>
-      {sub && (
-        <div className="text-sm text-gray-400 mt-1">{sub}</div>
-      )}
+      {sub && <div className="mt-1.5 text-sm text-muted">{sub}</div>}
     </div>
   )
 }
