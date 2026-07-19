@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlNob212b2JUZWNoQVBJVXNlciIsImlhdCI6MTY1OTg5NTcwOH0.IOdKen62ye0N9WljM_cj3Xffmjs3dXUqoJRZ_1ezd4Q"
-API_URL = "https://backend-api.shomvob.co/api/v2/jobpost/get-active-job-list-guest"
+
 
 CATEGORY_MAP = {
     "Sales/Marketing": "Marketing/Sales",
