@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { IBM_Plex_Sans, Fraunces, Source_Serif_4 } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Mono, Fraunces, Source_Serif_4 } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
 
@@ -7,6 +7,12 @@ const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-sans",
+})
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
 })
 
 const fraunces = Fraunces({
@@ -37,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${ibmPlexSans.variable} ${fraunces.variable} ${sourceSerif.variable}`}
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${fraunces.variable} ${sourceSerif.variable}`}
     >
       <body
         className="min-h-screen antialiased"
@@ -56,11 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <div className="flex gap-7 text-sm">
               {NAV.map((n) => (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className="text-muted hover:text-brand transition-colors"
-                >
+                <Link key={n.href} href={n.href} className="text-muted hover:text-brand transition-colors">
                   {n.label}
                 </Link>
               ))}

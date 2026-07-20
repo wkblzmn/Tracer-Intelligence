@@ -131,9 +131,9 @@ export default async function HomePage() {
       {/* Momentum + Employers */}
       <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <section className="rounded-2xl border border-line bg-surface p-6">
-          <Eyebrow>Sector momentum</Eyebrow>
-          <h2 className="text-xl font-semibold text-ink">Category momentum</h2>
-          <p className="mb-5 mt-0.5 text-sm text-muted">Fastest-moving sectors vs previous 30 days</p>
+          <Eyebrow>Current demand</Eyebrow>
+          <h2 className="text-xl font-semibold text-ink">Current demand by sector</h2>
+          <p className="mb-5 mt-0.5 text-sm text-muted">Postings per sector, last 30 days</p>
           <CategoryChart data={categories} />
         </section>
 
@@ -154,7 +154,7 @@ export default async function HomePage() {
                 <span className="flex-1 truncate text-sm font-medium text-ink group-hover:text-brand">
                   {c.company}
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-brand">
+                <span className="nums text-sm font-semibold text-brand">
                   {c.job_count}
                 </span>
               </a>

@@ -16,6 +16,13 @@ body {
   color: var(--color-ink);
 }
 
+/* Monospaced, tabular figures — the "verified ledger" number treatment. */
+.nums {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%      { opacity: 0.35; transform: scale(0.8); }
