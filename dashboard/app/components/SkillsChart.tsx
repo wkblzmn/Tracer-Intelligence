@@ -28,13 +28,16 @@ export default function SkillsChart({ data }: { data: SkillData[] }) {
         layout="vertical"
         margin={{ top: 4, right: 50, left: 0, bottom: 4 }}
       >
-        <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
-        <YAxis type="category" dataKey="skill" tick={{ fontSize: 11 }} width={200} />
-        <Tooltip />
+        <XAxis type="number" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" allowDecimals={false} />
+        <YAxis type="category" dataKey="skill" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" width={200} />
+        <Tooltip
+          contentStyle={{ borderRadius: 8, border: "1px solid #E7E6F1", fontSize: 12 }}
+          cursor={{ fill: "#EEEDF9" }}
+        />
         <Legend />
-        <Bar dataKey="bdjobs" stackId="a" fill="#4f46e5" name="Bdjobs" />
-        <Bar dataKey="skilljobs" stackId="a" fill="#10b981" name="Skill.jobs" />
-        <Bar dataKey="shomvob" stackId="a" fill="#f59e0b" name="Shomvob" radius={[0, 2, 2, 0]} />
+        <Bar dataKey="bdjobs" stackId="a" fill="#534AB7" name="Bdjobs" />
+        <Bar dataKey="skilljobs" stackId="a" fill="#2F8F87" name="Skill.jobs" />
+        <Bar dataKey="shomvob" stackId="a" fill="#C2683C" name="Shomvob" radius={[0, 2, 2, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

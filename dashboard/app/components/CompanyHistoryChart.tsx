@@ -20,14 +20,16 @@ export default function CompanyHistoryChart({ data }: { data: WeekPoint[] }) {
     <div style={{ width: "100%", height: 220 }}>
       <ResponsiveContainer>
         <BarChart data={formatted} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-          <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={0} angle={-30} textAnchor="end" height={50} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={30} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E6F1" />
+          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" interval={0} angle={-30} textAnchor="end" height={50} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" width={30} />
           <Tooltip
             formatter={(value) => [`${value} posting${value === 1 ? "" : "s"}`, "Postings"]}
             labelFormatter={(label) => `Week of ${label}`}
+            contentStyle={{ borderRadius: 8, border: "1px solid #E7E6F1", fontSize: 12 }}
+            cursor={{ fill: "#EEEDF9" }}
           />
-          <Bar dataKey="count" fill="#3b82f6" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="count" fill="#534AB7" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

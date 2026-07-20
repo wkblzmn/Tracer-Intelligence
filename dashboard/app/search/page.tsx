@@ -46,6 +46,9 @@ const DATE_PRESETS: { label: string; days: number | null }[] = [
   { label: "Past 60 days", days: 60 },
 ]
 
+const inputClass =
+  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted/70 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-colors"
+
 function formatPostedDate(dateStr: string | null): string {
   if (!dateStr) return "Date unknown"
   const d = new Date(dateStr + "T00:00:00Z")
@@ -106,109 +109,105 @@ export default function SearchPage() {
   }, [keyword, location, category, source, datePreset, salaryMin, salaryMax, hasAnyFilter])
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-2">Search Jobs</h1>
-      <p className="text-gray-500 mb-6">Search by title, skill, or company — or browse with filters alone</p>
+    <main className="max-w-4xl mx-auto px-4 py-12">
+      <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand">Search</div>
+      <h1 className="text-3xl font-semibold tracking-tight text-ink">Search jobs</h1>
+      <p className="mt-1 mb-6 text-muted">Search by title, skill, or company — or browse with filters alone</p>
 
-      <input
-        type="text"
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        placeholder="e.g. marketing, BRAC, software..."
-        className="w-full border border-gray-300 rounded-lg px-4 py-3 text-base focus:outline-none focus:border-blue-400"
-      />
-
-      <div className="grid grid-cols-3 gap-3 mt-3">
+      <div className="rounded-2xl border border-line bg-surface p-5 space-y-3">
         <input
           type="text"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          placeholder="Location (e.g. Dhaka, Gazipur)"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="e.g. marketing, BRAC, software..."
+          className="w-full rounded-lg border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-colors"
         />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-        >
-          <option value="">All categories</option>
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Location (e.g. Dhaka, Gazipur)"
+            className={inputClass}
+          />
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
+            <option value="">All categories</option>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <select value={source} onChange={(e) => setSource(e.target.value)} className={inputClass}>
+            <option value="">All sites</option>
+            {SOURCES.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex gap-2 flex-wrap">
+          {DATE_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              onClick={() => setDatePreset(p.days)}
+              className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                datePreset === p.days
+                  ? "bg-brand text-white border-brand"
+                  : "border-line text-muted hover:border-brand hover:text-brand"
+              }`}
+            >
+              {p.label}
+            </button>
           ))}
-        </select>
-        <select
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-        >
-          <option value="">All sites</option>
-          {SOURCES.map((s) => (
-            <option key={s.value} value={s.value}>{s.label}</option>
-          ))}
-        </select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="number"
+            value={salaryMin}
+            onChange={(e) => setSalaryMin(e.target.value)}
+            placeholder="Min salary (BDT)"
+            className={inputClass}
+          />
+          <input
+            type="number"
+            value={salaryMax}
+            onChange={(e) => setSalaryMax(e.target.value)}
+            placeholder="Max salary (BDT)"
+            className={inputClass}
+          />
+        </div>
       </div>
 
-      <div className="flex gap-2 mt-3 flex-wrap">
-        {DATE_PRESETS.map((p) => (
-          <button
-            key={p.label}
-            onClick={() => setDatePreset(p.days)}
-            className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
-              datePreset === p.days
-                ? "bg-blue-500 text-white border-blue-500"
-                : "border-gray-300 text-gray-600 hover:border-blue-400"
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 mt-3">
-        <input
-          type="number"
-          value={salaryMin}
-          onChange={(e) => setSalaryMin(e.target.value)}
-          placeholder="Min salary (BDT)"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-        />
-        <input
-          type="number"
-          value={salaryMax}
-          onChange={(e) => setSalaryMax(e.target.value)}
-          placeholder="Max salary (BDT)"
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-        />
-      </div>
-
-      {loading && <p className="text-gray-400 mt-4">Searching...</p>}
+      {loading && <p className="mt-5 text-muted">Searching...</p>}
 
       {!loading && hasAnyFilter && jobs.length === 0 && (
-        <p className="text-gray-400 mt-4">No results found</p>
+        <p className="mt-5 text-muted">No results found. Try broadening a filter.</p>
       )}
 
       {!loading && hasAnyFilter && total > 0 && (
-        <p className="text-gray-500 mt-4 text-sm">
-          {total} result{total === 1 ? "" : "s"}
+        <p className="mt-5 text-sm text-muted">
+          <span className="font-semibold text-ink tabular-nums">{total.toLocaleString()}</span>{" "}
+          result{total === 1 ? "" : "s"}
         </p>
       )}
 
-      <div className="space-y-3 mt-6">
+      <div className="mt-4 space-y-3">
         {jobs.map((job) => (
           <a
             key={job.source_url}
             href={job.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-4 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors"
+            className="block rounded-xl border border-line bg-surface p-4 transition-colors hover:border-brand"
           >
             <div className="flex items-center justify-between gap-2">
-              <div className="font-medium">{job.title}</div>
-              <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+              <div className="font-medium text-ink">{job.title}</div>
+              <span className="shrink-0 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-brand">
                 {SOURCE_LABELS[job.source] ?? job.source}
               </span>
             </div>
-            <div className="text-sm text-gray-500 mt-1">
+            <div className="mt-1 text-sm text-muted">
               {job.company} · {job.location ?? "Bangladesh"}
               {job.category ? ` · ${job.category}` : ""} · {formatPostedDate(job.posted_at)}
               {formatDeadline(job.deadline)}

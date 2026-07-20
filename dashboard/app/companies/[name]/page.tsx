@@ -63,14 +63,18 @@ export default async function CompanyPage({
     .map(([week, count]) => ({ week, count }))
     .sort((a, b) => a.week.localeCompare(b.week))
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-1">{companyName}</h1>
-      <p className="text-gray-500 mb-8">{activeJobs.length} active postings</p>
+    <main className="max-w-3xl mx-auto px-4 py-12">
+      <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand">Company</div>
+      <h1 className="text-3xl font-semibold tracking-tight text-ink">{companyName}</h1>
+      <p className="mt-1 mb-8 text-muted">
+        <span className="font-semibold text-ink tabular-nums">{activeJobs.length}</span> active posting{activeJobs.length === 1 ? "" : "s"}
+      </p>
       {history.length > 1 && (
-        <div className="mb-8">
-          <h2 className="text-sm font-medium text-gray-700 mb-2">Posting activity over time</h2>
+        <section className="mb-8 rounded-2xl border border-line bg-surface p-6">
+          <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand">Activity</div>
+          <h2 className="mb-4 text-xl font-semibold text-ink">Posting activity over time</h2>
           <CompanyHistoryChart data={history} />
-        </div>
+        </section>
       )}
       <div className="space-y-3">
         {activeJobs.map((job, i) => (
@@ -79,15 +83,15 @@ export default async function CompanyPage({
             href={job.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block p-4 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors"
+            className="block rounded-xl border border-line bg-surface p-4 transition-colors hover:border-brand"
           >
             <div className="flex items-center justify-between gap-2">
-              <div className="font-medium">{job.title}</div>
-              <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+              <div className="font-medium text-ink">{job.title}</div>
+              <span className="shrink-0 rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-brand">
                 {SOURCE_LABELS[job.source] ?? job.source}
               </span>
             </div>
-            <div className="text-sm text-gray-500 mt-1">
+            <div className="mt-1 text-sm text-muted">
               {job.location ?? "Bangladesh"} · {formatPostedDate(job.posted_at)}
               {formatDeadline(job.deadline)}
             </div>
