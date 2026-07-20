@@ -13,6 +13,38 @@ load_dotenv()
 LIST_URL   = "https://studio.skill.jobs/api/job_search/?limit=25&offset={offset}"
 DETAIL_URL = "https://studio.skill.jobs/api/job_search/{slug}/"
 
+# Skill.jobs "industry_list" free-text -> Bdjobs/Shomvob shared sector vocabulary.
+# Primary industry only (industry_list[0]) so every source stays one-sector-per-
+# posting and the source x sector matrix is comparable. Exact Bdjobs values
+# (IT/Telecommunication, Marketing/Sales, Healthcare/Medical, Education/Training,
+# Bank/Non-Bank Fin. Institution) fall through unchanged. Unmapped values keep
+# their raw string so nothing is lost and they surface for later mapping.
+SKILLJOBS_CATEGORY_MAP = {
+    "Education, Training and Development": "Education/Training",
+    "Education and Research":              "Education/Training",
+    "Study Abroad Consultancy":            "Education/Training",
+    "Education or Marketing":              "Education/Training",
+    "Marketing and Education":             "Marketing/Sales",
+    "Marketing and Design":                "Marketing/Sales",
+    "E-Commerce, Marketing":               "Marketing/Sales",
+    "Sales and Franchise Management":      "Marketing/Sales",
+    "Marketing & Sales":                   "Marketing/Sales",
+    "Sales, Marketing, Customer Service":  "Marketing/Sales",
+    "IT Services":                         "IT/Telecommunication",
+    "IT/Software":                         "IT/Telecommunication",
+    "Engineering, Renewable Energy, IT":   "Engineer/Architect",
+    "IT, Electrical Engineering":          "IT/Telecommunication",
+    "IT and Office Management":            "IT/Telecommunication",
+    "Digital Marketing":                   "Marketing/Sales",
+    "Retail and Marketing":                "Marketing/Sales",
+    "Garments/ Textile":                   "Garments/Textile",
+    "Construction":                        "Electrician/Construction/Repair",
+}
+
+# employment-type values Skill.jobs' listing "type" leaks into category — a row
+# still showing one of these hasn't had its real sector captured yet.
+EMPLOYMENT_TYPES = ("Full Time", "Part Time", "Contractual", "Internship", "Freelance", "Temporary")
+
 
 def parse_skilljobs_date(raw):
     if not raw:
@@ -21,6 +53,19 @@ def parse_skilljobs_date(raw):
         return datetime.strptime(raw, '%b %d, %Y').strftime('%Y-%m-%d')
     except ValueError:
         return None
+
+
+def map_industry(industry_list):
+    """First industry -> mapped sector; falls back to raw string; '' if none."""
+    if not industry_list:
+        return "Uncategorized"
+    first = industry_list[0]
+    if not isinstance(first, str):
+        return ""
+    first = " ".join(first.split())  # collapse stray internal spaces
+    if not first:
+        return "Uncategorized"
+    return SKILLJOBS_CATEGORY_MAP.get(first, first)
 
 
 class SkilljobsSpider(scrapy.Spider):
@@ -35,10 +80,10 @@ class SkilljobsSpider(scrapy.Spider):
     enriched_keys = None  # loaded lazily on first parse()
 
     def _load_enriched_keys(self):
-        # dedupe_keys of skilljobs postings that ALREADY have skills captured,
-        # so we only spend a detail request on jobs we haven't enriched yet.
-        # Self-backfilling: old rows without skills get fetched once, new rows
-        # get fetched once, everything after is skipped.
+        # A row is "fully enriched" only if it has skills AND a real sector
+        # category (not an employment-type leak). Rows still showing Full Time /
+        # Contractual get re-fetched once to capture their industry, then heal
+        # into the skip set. New rows (no skills) get fetched too. Self-backfilling.
         keys = set()
         db_url = os.environ.get("DATABASE_URL")
         if db_url:
@@ -50,7 +95,10 @@ class SkilljobsSpider(scrapy.Spider):
                     FROM job_postings jp
                     WHERE jp.source = 'skilljobs'
                       AND EXISTS (SELECT 1 FROM job_skills js WHERE js.posting_id = jp.id)
-                """)
+                      AND jp.category IS NOT NULL
+                      AND jp.category <> ''
+                      AND jp.category NOT IN %s
+                """, (EMPLOYMENT_TYPES,))
                 keys = {r[0] for r in cur.fetchall()}
                 cur.close(); conn.close()
                 self.logger.info(f"Loaded {len(keys)} already-enriched skilljobs keys")
@@ -78,7 +126,10 @@ class SkilljobsSpider(scrapy.Spider):
             item["title"]       = job.get("title", "")
             item["company"]     = company.get("name", "") or job.get("company_name", "")
             item["location"]    = job.get("location", "")
-            item["category"]    = job.get("type", "")
+            # category intentionally NOT set here — the listing's "type" is
+            # employment type, not sector. Real sector comes from the detail
+            # fetch (industry_list). Left unset so the pipeline keeps any
+            # existing sector on skipped rows.
 
             min_sal = job.get("min_salary", 0)
             max_sal = job.get("max_salary", 0)
@@ -90,8 +141,8 @@ class SkilljobsSpider(scrapy.Spider):
             item["posted_at"]   = parse_skilljobs_date(job.get("created_at", ""))
 
             if item["dedupe_key"] in self.enriched_keys:
-                # Already enriched — skip the detail request. Empty description
-                # tells the pipeline to keep the rich text already stored.
+                # Fully enriched — skip the detail request. Empty description +
+                # unset category tell the pipeline to keep what's already stored.
                 item["description"] = ""
                 yield item
             else:
@@ -114,6 +165,9 @@ class SkilljobsSpider(scrapy.Spider):
         item = response.meta["item"]
         job = response.meta["job"]
         d = json.loads(response.text)
+
+        # Real sector, mapped from the primary industry.
+        item["category"] = map_industry(d.get("industry_list") or [])
 
         # Combined description: listing metadata + the three real text blocks.
         meta_bit = f"{job.get('workplace', '')} | {job.get('level', '')}".strip(" |")

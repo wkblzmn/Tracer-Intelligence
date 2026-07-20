@@ -37,7 +37,8 @@ class PostgresPipeline:
             )
             ON CONFLICT (dedupe_key) DO UPDATE SET
                 last_seen_at = NOW(),
-                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description)
+                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description),
+                category = COALESCE(NULLIF(EXCLUDED.category, ''), job_postings.category)
             RETURNING id
         ''', (
             adapter.get('source'),
