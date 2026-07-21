@@ -111,9 +111,42 @@ export default async function HomePage() {
           See who&rsquo;s hiring and what the Bangladesh job market wants.
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          Live postings from Bdjobs, Skill.jobs and Shomvob &mdash; tracked every day and
-          kept over time, so hiring trends, in-demand skills, and salary signals actually surface.
+          Tracer Intelligence is a labour-market observatory for Bangladesh. It collects
+          postings from the country&rsquo;s major job boards every day, keeps them after they
+          expire, and turns the accumulated record into measurable signals &mdash; hiring
+          trends, in-demand skills, advertised pay where disclosed, and where the market
+          actually hires.
         </p>
+
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl">
+          <div>
+            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-brand">
+              Three sources, one record
+            </div>
+            <p className="text-sm leading-relaxed text-muted">
+              Bdjobs, Skill.jobs and Shomvob &mdash; white-collar, tech, and the blue/silver-collar
+              segment no single board covers &mdash; deduplicated into one tracked dataset.
+            </p>
+          </div>
+          <div>
+            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-brand">
+              Observed, not self-reported
+            </div>
+            <p className="text-sm leading-relaxed text-muted">
+              Every posting is re-checked daily until it disappears, so activity, shelf life
+              and trends are measured from evidence, not employer claims.
+            </p>
+          </div>
+          <div>
+            <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-brand">
+              Honest figures
+            </div>
+            <p className="text-sm leading-relaxed text-muted">
+              Every chart states its coverage &mdash; sample sizes, disclosure rates, data
+              gaps &mdash; and advertised pay is never imputed or estimated.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Metric readout */}
