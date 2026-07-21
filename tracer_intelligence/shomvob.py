@@ -152,4 +152,9 @@ if __name__ == "__main__":
         inserted, skipped = save_jobs(jobs)
         print(f"Done — {inserted} inserted, {skipped} skipped (duplicates)")
     else:
+        # Shomvob always has hundreds of live postings, so zero jobs means the
+        # fetch failed (blocked page, timed-out API, layout change) — exit
+        # non-zero so CI marks the step red instead of a silent fake-green.
+        # if: always() on the later workflow steps keeps the rest running.
         print("No jobs found — check if the page loaded correctly")
+        sys.exit(1)
