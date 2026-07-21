@@ -37,6 +37,18 @@ class PostgresPipeline:
         district = _clean_district(loc)
         hub = hub_for(loc)
 
+        try:
+            self._upsert(adapter, loc, district, hub)
+        except psycopg2.Error as e:
+            # Roll back so the aborted transaction can't poison every
+            # subsequent item in this run; skip just this row.
+            self.conn.rollback()
+            spider.logger.error(
+                f"DB error for {adapter.get('dedupe_key')}: {e} — row skipped"
+            )
+        return item
+
+    def _upsert(self, adapter, loc, district, hub):
         self.cursor.execute('''
             INSERT INTO job_postings (
                 source, source_url, dedupe_key, title, company,
@@ -84,4 +96,3 @@ class PostgresPipeline:
             )
 
         self.conn.commit()
-        return item

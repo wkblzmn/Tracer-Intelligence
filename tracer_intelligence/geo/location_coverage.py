@@ -8,11 +8,15 @@ shares, and the top unmapped location strings (what to add to the map next).
   python location_coverage.py
 """
 import os
+import sys
 import psycopg2
 from collections import Counter
 from dotenv import load_dotenv
 
-from location_map import map_district, hub_for, NATIONAL, OVERSEAS, UNKNOWN
+# Validate against the SAME map the live pipeline uses (the copy inside the
+# scrapy package) — a stale local copy here would make this report lie.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from tracer_intelligence.location_map import map_district, hub_for, NATIONAL, OVERSEAS, UNKNOWN
 
 load_dotenv()
 
