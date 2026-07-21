@@ -13,6 +13,7 @@ export async function GET() {
     WHERE category IS NOT NULL
       AND category != ''
       AND category != '0'
+      AND duplicate_of IS NULL
       AND posted_at >= CURRENT_DATE - INTERVAL '60 days'
     GROUP BY category
     ORDER BY total DESC

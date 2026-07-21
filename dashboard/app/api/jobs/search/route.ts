@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
   const dateTo = params.get("dateTo")
   const salaryMin = params.get("salaryMin")
   const salaryMax = params.get("salaryMax")
-  const limit = Number(params.get("limit") ?? 20)
+  const rawLimit = Number(params.get("limit") ?? 20)
+  const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(Math.trunc(rawLimit), 1), 100) : 20
 
   const conditions: string[] = [
     "duplicate_of IS NULL",

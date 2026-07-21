@@ -11,6 +11,7 @@ interface Job {
   source: string
   source_url: string
   last_seen_at: string
+  link_dead: boolean
 }
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -52,7 +53,9 @@ export default async function CompanyPage({
     { cache: "no-store" }
   )
   const jobs: Job[] = await res.json()
-  const activeJobs = jobs.filter((job) => isStillActive(job.last_seen_at))
+  // Active = canonical predicate (matches trending count): recently seen AND link not dead.
+  // History chart below deliberately keeps every posting, dead or not.
+  const activeJobs = jobs.filter((job) => isStillActive(job.last_seen_at) && !job.link_dead)
   const weekCounts = new Map<string, number>()
   for (const job of jobs) {
     if (!job.posted_at) continue

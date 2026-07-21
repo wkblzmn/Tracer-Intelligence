@@ -6,6 +6,7 @@ export async function GET() {
     `SELECT posted_at::date as posted_at, COUNT(*) as jobs
      FROM job_postings
      WHERE posted_at >= CURRENT_DATE - INTERVAL '60 days'
+       AND duplicate_of IS NULL
      GROUP BY posted_at::date
      ORDER BY posted_at::date ASC`
   )

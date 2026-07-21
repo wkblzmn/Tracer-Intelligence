@@ -40,8 +40,12 @@ export async function GET() {
     perDistrict.get(r.district)!.push({ sector: r.category, count: n, lq: Math.round(lq * 100) / 100 })
   }
 
-  // top districts by volume; each keeps its over-indexed sectors (LQ >= 1.3, count >= 3)
+  // top districts by volume; each keeps its over-indexed sectors (LQ >= 1.3, count >= 3).
+  // Dhaka is excluded from the specialization grid: it IS the national baseline
+  // (everything ~1x), so its card is noise next to real outliers. It still
+  // leads the map payload and the hub view.
   const districts = [...distTotal.entries()]
+    .filter(([district]) => district !== "Dhaka")
     .sort((a, b) => b[1] - a[1])
     .slice(0, 12)
     .map(([district, total]) => ({

@@ -25,7 +25,7 @@ interface DataPoint {
 
 interface Metrics {
   active_postings: number
-  new_this_week: number
+  postings_60d: number
   companies_hiring: number
   total_companies: number
 }
@@ -115,7 +115,7 @@ export default async function HomePage() {
       {/* Metric readout */}
       <div className="mb-14 grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard label="Active Postings" value={metrics.active_postings} accent />
-        <MetricCard label="Postings (60 days)" value={metrics.new_this_week} />
+        <MetricCard label="Postings (60 days)" value={metrics.postings_60d} />
         <MetricCard label="Companies Hiring" value={metrics.companies_hiring} />
         <MetricCard label="Total Companies" value={metrics.total_companies} />
       </div>
