@@ -31,12 +31,14 @@ jobs:
         run: |
           python shomvob.py
       - name: Run Skilljobs scraper
+        if: always()
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
         run: |
           python -m scrapy crawl skilljobs
       - name: Check for dead job links
+        if: always()
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
