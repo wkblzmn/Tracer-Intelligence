@@ -16,6 +16,9 @@ export default async function InsightsPage() {
   const [life, cooc] = await Promise.all([getLifespan(), getCooc()])
   const m = life.medians ?? {}
   const c = life.counts ?? {}
+  const rel = life.reliable ?? {}
+  const shelf = (src: "bdjobs" | "skilljobs" | "shomvob") =>
+    rel[src] === false ? "insufficient data" : `${m[src] ?? "n/a"}d`
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-12">
@@ -36,10 +39,11 @@ export default async function InsightsPage() {
         <LifespanChart data={life.curves ?? []} />
         <p className="nums mt-4 text-[11px] leading-relaxed text-muted">
           FIG. 2 — Posting survival among closed vacancies. Median shelf life:
-          Bdjobs {m.bdjobs ?? "n/a"}d (n={c.bdjobs ?? 0}), Skill.jobs {m.skilljobs ?? "n/a"}d (n={c.skilljobs ?? 0}),
-          Shomvob {m.shomvob ?? "n/a"}d (n={c.shomvob ?? 0}). Short shelf life ~ scarce candidates or urgent hiring;
+          Bdjobs {shelf("bdjobs")} (n={c.bdjobs ?? 0}), Skill.jobs {shelf("skilljobs")} (n={c.skilljobs ?? 0}),
+          Shomvob {shelf("shomvob")} (n={c.shomvob ?? 0}). Short shelf life ~ scarce candidates or urgent hiring;
           long-lived postings ~ labour surplus or evergreen ads. A salary-free proxy for market tightness.
-          Closed cohort only (descriptive, not a censored estimate).
+          Closed cohort only (descriptive, not a censored estimate). Sources whose closures cluster on a single
+          date (usually a crawl gap, not real closures) are marked insufficient data rather than plotted.
         </p>
       </section>
 
