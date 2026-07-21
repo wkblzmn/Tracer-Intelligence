@@ -59,8 +59,8 @@ def fetch_jobs():
 
         page.on("response", handle_response)
         print("Loading Shomvob jobs page...")
-        page.goto("https://app.shomvob.co/all-jobs/", wait_until="networkidle", timeout=60000)
-        page.wait_for_timeout(5000)
+        page.goto("https://app.shomvob.co/all-jobs/", wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_timeout(8000)
         browser.close()
         return jobs_data
 
