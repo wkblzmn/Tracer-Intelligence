@@ -1,7 +1,7 @@
 import os
 import sys
 import psycopg2
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 from dotenv import load_dotenv
 
 # location_map lives in the inner scrapy package; make it importable when this
@@ -59,8 +59,16 @@ def fetch_jobs():
 
         page.on("response", handle_response)
         print("Loading Shomvob jobs page...")
-        page.goto("https://app.shomvob.co/all-jobs/", wait_until="domcontentloaded", timeout=60000)
-        page.wait_for_timeout(8000)
+        # Wait for the actual API call to complete instead of guessing a sleep
+        # duration -- CI's network path to this site is apparently much slower
+        # than local (the prior networkidle attempt took >60s), so a fixed
+        # short timeout silently returned zero jobs there.
+        try:
+            with page.expect_response(lambda r: "get-active-job-list-guest" in r.url, timeout=45000):
+                page.goto("https://app.shomvob.co/all-jobs/", wait_until="domcontentloaded", timeout=60000)
+        except PlaywrightTimeoutError:
+            print("Timed out waiting for the job-list API response")
+        page.wait_for_timeout(2000)
         browser.close()
         return jobs_data
 
