@@ -27,7 +27,20 @@ const CATEGORIES = [
   "Company Secretary/Regulatory affairs", "Pharmaceutical",
 ]
 
-const SOURCES: { value: string; label: string }[] = [
+const DISTRICTS = [
+  "Bagerhat", "Bandarban", "Barguna", "Barishal", "Bhola", "Bogura", "Brahmanbaria",
+  "Chandpur", "Chapainawabganj", "Chattogram", "Chuadanga", "Cox's Bazar", "Cumilla",
+  "Dhaka", "Dinajpur", "Faridpur", "Feni", "Gaibandha", "Gazipur", "Gopalganj",
+  "Habiganj", "Jamalpur", "Jashore", "Jhalokati", "Jhenaidah", "Joypurhat", "Khagrachhari",
+  "Khulna", "Kishoreganj", "Kurigram", "Kushtia", "Lakshmipur", "Lalmonirhat", "Madaripur",
+  "Magura", "Manikganj", "Meherpur", "Moulvibazar", "Munshiganj", "Mymensingh", "Naogaon",
+  "Narail", "Narayanganj", "Narsingdi", "Natore", "Netrokona", "Nilphamari", "Noakhali",
+  "Pabna", "Panchagarh", "Patuakhali", "Pirojpur", "Rajbari", "Rajshahi", "Rangamati",
+  "Rangpur", "Satkhira", "Shariatpur", "Sherpur", "Sirajganj", "Sunamganj", "Sylhet",
+  "Tangail", "Thakurgaon",
+]
+
+const SOURCES = [
   { value: "bdjobs", label: "Bdjobs" },
   { value: "skilljobs", label: "Skill.jobs" },
   { value: "shomvob", label: "Shomvob" },
@@ -64,6 +77,7 @@ function formatDeadline(dateStr: string | null): string {
 export default function SearchPage() {
   const [keyword, setKeyword] = useState("")
   const [location, setLocation] = useState("")
+  const [district, setDistrict] = useState("")
   const [category, setCategory] = useState("")
   const [source, setSource] = useState("")
   const [datePreset, setDatePreset] = useState<number | null>(null)
@@ -74,7 +88,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false)
 
   const hasAnyFilter =
-    keyword.trim() || location.trim() || category || source || datePreset || salaryMin || salaryMax
+    keyword.trim() || location.trim() || district || category || source || datePreset || salaryMin || salaryMax
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
@@ -88,6 +102,7 @@ export default function SearchPage() {
       const params = new URLSearchParams()
       if (keyword.trim()) params.set("keyword", keyword.trim())
       if (location.trim()) params.set("location", location.trim())
+      if (district) params.set("district", district)
       if (category) params.set("category", category)
       if (source) params.set("source", source)
       if (datePreset) {
@@ -106,7 +121,7 @@ export default function SearchPage() {
     }, 400)
 
     return () => clearTimeout(timeout)
-  }, [keyword, location, category, source, datePreset, salaryMin, salaryMax, hasAnyFilter])
+  }, [keyword, location, district, category, source, datePreset, salaryMin, salaryMax, hasAnyFilter])
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-12">
@@ -123,12 +138,18 @@ export default function SearchPage() {
           className="w-full rounded-lg border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-muted/70 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/15 transition-colors"
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <select value={district} onChange={(e) => setDistrict(e.target.value)} className={inputClass}>
+            <option value="">All districts</option>
+            {DISTRICTS.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location (e.g. Dhaka, Gazipur)"
+            placeholder="Area (e.g. Gulshan, Uttara)"
             className={inputClass}
           />
           <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
@@ -187,7 +208,7 @@ export default function SearchPage() {
 
       {!loading && hasAnyFilter && total > 0 && (
         <p className="mt-5 text-sm text-muted">
-          <span className="font-semibold text-ink tabular-nums">{total.toLocaleString()}</span>{" "}
+          <span className="nums font-semibold text-ink">{total.toLocaleString()}</span>{" "}
           result{total === 1 ? "" : "s"}
         </p>
       )}

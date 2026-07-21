@@ -15,4 +15,4 @@ class JobPostingItem(scrapy.Item):
     description = scrapy.Field()
     deadline    = scrapy.Field()
     posted_at   = scrapy.Field()
-    skills      = scrapy.Field()   # list of skill strings (Skill.jobs); pipeline writes to job_skills
+    skills      = scrapy.Field()   # list of skill strings (Skill.jobs) -> job_skills

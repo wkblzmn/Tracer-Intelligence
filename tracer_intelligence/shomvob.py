@@ -1,10 +1,22 @@
-import json
 import os
+import sys
 import psycopg2
 from playwright.sync_api import sync_playwright
 from dotenv import load_dotenv
 
+# location_map lives in the inner scrapy package; make it importable when this
+# standalone script is run from the tracer_intelligence/ directory.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from tracer_intelligence.location_map import (
+    map_district, hub_for, NATIONAL, OVERSEAS, UNKNOWN,
+)
+
 load_dotenv()
+
+
+def _clean_district(loc):
+    d = map_district(loc)
+    return None if d in (None, NATIONAL, OVERSEAS, UNKNOWN) else d
 
 
 CATEGORY_MAP = {
@@ -30,11 +42,9 @@ CATEGORY_MAP = {
 
 def fetch_jobs():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)  # visible so we can see what happens
+        browser = p.chromium.launch(headless=False)
         context = browser.new_context()
         page = context.new_page()
-
-        # Intercept the API response directly
         jobs_data = []
 
         def handle_response(response):
@@ -48,20 +58,14 @@ def fetch_jobs():
                     print(f"Could not parse response: {e}")
 
         page.on("response", handle_response)
-
-        # Navigate to jobs page — the browser will make the API call itself
         print("Loading Shomvob jobs page...")
         page.goto("https://app.shomvob.co/all-jobs/", wait_until="networkidle", timeout=60000)
-        page.wait_for_timeout(5000)  # extra wait
-
+        page.wait_for_timeout(5000)
         browser.close()
         return jobs_data
 
 
 def build_description(job):
-    # Combine the real text fields. English fields first (skill-bearing), then
-    # the mixed Bangla/English job_description. English skill terms survive the
-    # Bangla text, so the dictionary extractor still works.
     parts = [
         job.get("job_responsibilities_en", "") or "",
         job.get("other_requirement_en", "") or "",
@@ -77,7 +81,6 @@ def save_jobs(jobs):
 
     conn = psycopg2.connect(db_url)
     cursor = conn.cursor()
-
     inserted = 0
     skipped = 0
 
@@ -86,27 +89,32 @@ def save_jobs(jobs):
         salary_end = job.get("salary_end")
         deadline = job.get("application_deadline", "")
         posted = job.get("job_live_at", "")
+        location = job.get("job_locations_en", "")
+        district = _clean_district(location)
+        hub = hub_for(location)
 
         cursor.execute("""
             INSERT INTO job_postings (
                 source, source_url, dedupe_key, title, company,
                 location, category, salary_raw, salary_min, salary_max,
-                description, deadline, posted_at, last_seen_at
+                description, deadline, posted_at, district, hub, last_seen_at
             ) VALUES (
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s,
-                %s, %s, %s, NOW()
+                %s, %s, %s, %s, %s, NOW()
             )
             ON CONFLICT (dedupe_key) DO UPDATE SET
                 last_seen_at = NOW(),
-                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description)
+                description = COALESCE(NULLIF(EXCLUDED.description, ''), job_postings.description),
+                district = COALESCE(EXCLUDED.district, job_postings.district),
+                hub = COALESCE(EXCLUDED.hub, job_postings.hub)
         """, (
             "shomvob",
             f"https://app.shomvob.co/single-job-description/?id={job['id']}",
             f"shomvob_{job['id']}",
             job.get("job_title", "") or job.get("job_type_en", ""),
             job.get("company_name", ""),
-            job.get("job_locations_en", ""),
+            location,
             CATEGORY_MAP.get(job.get("main_category", ""), job.get("main_category", "")),
             job.get("salary_range", "") or "",
             int(salary_start) if salary_start else None,
@@ -114,6 +122,8 @@ def save_jobs(jobs):
             build_description(job),
             deadline[:10] if deadline else None,
             posted[:10] if posted else None,
+            district,
+            hub,
         ))
         if cursor.rowcount > 0:
             inserted += 1

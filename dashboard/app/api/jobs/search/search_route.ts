@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams
   const keyword = params.get("keyword") ?? ""
   const location = params.get("location")
+  const district = params.get("district")
   const category = params.get("category")
   const source = params.get("source")
   const dateFrom = params.get("dateFrom")
@@ -13,7 +14,12 @@ export async function GET(request: NextRequest) {
   const salaryMax = params.get("salaryMax")
   const limit = Number(params.get("limit") ?? 20)
 
-  const conditions: string[] = ["duplicate_of IS NULL", "last_seen_at >= NOW() - INTERVAL '3 days'", "link_dead = FALSE"]
+  const conditions: string[] = [
+    "duplicate_of IS NULL",
+    "is_confidential = FALSE",
+    "last_seen_at >= NOW() - INTERVAL '3 days'",
+    "link_dead = FALSE",
+  ]
   const values: (string | number)[] = []
 
   if (keyword.trim()) {
@@ -26,6 +32,10 @@ export async function GET(request: NextRequest) {
   if (location) {
     values.push(`%${location}%`)
     conditions.push(`location ILIKE $${values.length}`)
+  }
+  if (district) {
+    values.push(district)
+    conditions.push(`district = $${values.length}`)
   }
   if (category) {
     values.push(category)
