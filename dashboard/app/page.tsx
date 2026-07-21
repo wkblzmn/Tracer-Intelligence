@@ -2,6 +2,10 @@ import JobsChart from "./components/JobsChart"
 import MetricCard from "./components/MetricCard"
 import CategoryChart from "./components/CategoryChart"
 
+// Render per-request (no build-time prerender — API isn't up during build),
+// but the fetches below share a 300s data cache so visitors don't hit the DB.
+export const dynamic = "force-dynamic"
+
 const API = process.env.NEXT_PUBLIC_API_URL
 
 interface Job {
@@ -50,27 +54,27 @@ function formatDeadline(dateStr: string | null): string {
 }
 
 async function getRecentJobs(): Promise<Job[]> {
-  const res = await fetch(`${API}/api/jobs/recent?limit=20`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/jobs/recent?limit=20`, { next: { revalidate: 300 } })
   return res.json()
 }
 
 async function getTrendingCompanies(): Promise<TrendingCompany[]> {
-  const res = await fetch(`${API}/api/companies/trending?limit=10`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/companies/trending?limit=10`, { next: { revalidate: 300 } })
   return res.json()
 }
 
 async function getOverview(): Promise<DataPoint[]> {
-  const res = await fetch(`${API}/api/stats/overview`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/overview`, { next: { revalidate: 300 } })
   return res.json()
 }
 
 async function getMetrics(): Promise<Metrics> {
-  const res = await fetch(`${API}/api/stats/metrics`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/metrics`, { next: { revalidate: 300 } })
   return res.json()
 }
 
 async function getCategories(): Promise<CategoryData[]> {
-  const res = await fetch(`${API}/api/stats/categories`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/categories`, { next: { revalidate: 300 } })
   return res.json()
 }
 

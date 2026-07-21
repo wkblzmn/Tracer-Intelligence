@@ -1,3 +1,5 @@
+import { SOURCE_RGB } from "@/lib/chartTheme"
+
 interface SectorRow {
   sector: string
   counts: { bdjobs: number; skilljobs: number; shomvob: number }
@@ -10,9 +12,9 @@ interface Props {
 }
 
 const SOURCES = [
-  { key: "bdjobs", label: "Bdjobs", rgb: "83,74,183" },
-  { key: "skilljobs", label: "Skill.jobs", rgb: "47,143,135" },
-  { key: "shomvob", label: "Shomvob", rgb: "194,104,60" },
+  { key: "bdjobs", label: "Bdjobs", rgb: SOURCE_RGB.bdjobs },
+  { key: "skilljobs", label: "Skill.jobs", rgb: SOURCE_RGB.skilljobs },
+  { key: "shomvob", label: "Shomvob", rgb: SOURCE_RGB.shomvob },
 ] as const
 
 type SourceKey = (typeof SOURCES)[number]["key"]

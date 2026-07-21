@@ -1,14 +1,16 @@
 import LifespanChart from "../components/LifespanChart"
 import SkillCooccurrence from "../components/SkillCooccurrence"
 
+export const dynamic = "force-dynamic"
+
 const API = process.env.NEXT_PUBLIC_API_URL
 
 async function getLifespan() {
-  const res = await fetch(`${API}/api/stats/lifespan`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/lifespan`, { next: { revalidate: 300 } })
   return res.json()
 }
 async function getCooc() {
-  const res = await fetch(`${API}/api/stats/skill-cooccurrence`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/skill-cooccurrence`, { next: { revalidate: 300 } })
   return res.json()
 }
 

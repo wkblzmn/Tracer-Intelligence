@@ -10,6 +10,8 @@ import {
   ReferenceLine,
   ResponsiveContainer,
 } from "recharts"
+import ChartTooltip from "./ChartTooltip"
+import { SOURCE_COLORS, AXIS_TICK, AXIS_STROKE } from "@/lib/chartTheme"
 
 interface Point {
   day: number
@@ -24,26 +26,29 @@ export default function LifespanChart({ data }: { data: Point[] }) {
       <LineChart data={data} margin={{ top: 4, right: 12, left: -8, bottom: 4 }}>
         <XAxis
           dataKey="day"
-          tick={{ fontSize: 11, fill: "#6C6C7E" }}
-          stroke="#E7E6F1"
+          tick={AXIS_TICK}
+          stroke={AXIS_STROKE}
           label={{ value: "Days since posted", position: "insideBottom", offset: -2, fontSize: 11, fill: "#6C6C7E" }}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "#6C6C7E" }}
-          stroke="#E7E6F1"
+          tick={AXIS_TICK}
+          stroke={AXIS_STROKE}
           domain={[0, 100]}
           tickFormatter={(v) => `${v}%`}
         />
         <Tooltip
-          formatter={(value, name) => [value == null ? "n/a" : `${value}% still live`, name]}
-          labelFormatter={(d) => `Day ${d}`}
-          contentStyle={{ borderRadius: 8, border: "1px solid #E7E6F1", fontSize: 12 }}
+          content={
+            <ChartTooltip
+              formatLabel={(d) => `Day ${d}`}
+              formatValue={(v) => (v == null || v === "" ? "n/a" : `${v}% still live`)}
+            />
+          }
         />
         <Legend />
         <ReferenceLine y={50} stroke="#B9B7CC" strokeDasharray="3 3" />
-        <Line type="stepAfter" dataKey="bdjobs" name="Bdjobs" stroke="#534AB7" dot={false} strokeWidth={2} connectNulls />
-        <Line type="stepAfter" dataKey="skilljobs" name="Skill.jobs" stroke="#2F8F87" dot={false} strokeWidth={2} connectNulls />
-        <Line type="stepAfter" dataKey="shomvob" name="Shomvob" stroke="#C2683C" dot={false} strokeWidth={2} connectNulls />
+        <Line type="stepAfter" dataKey="bdjobs" name="Bdjobs" stroke={SOURCE_COLORS.bdjobs} dot={false} strokeWidth={2} connectNulls />
+        <Line type="stepAfter" dataKey="skilljobs" name="Skill.jobs" stroke={SOURCE_COLORS.skilljobs} dot={false} strokeWidth={2} connectNulls />
+        <Line type="stepAfter" dataKey="shomvob" name="Shomvob" stroke={SOURCE_COLORS.shomvob} dot={false} strokeWidth={2} connectNulls />
       </LineChart>
     </ResponsiveContainer>
   )

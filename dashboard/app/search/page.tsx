@@ -92,11 +92,8 @@ export default function SearchPage() {
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
-      if (!hasAnyFilter) {
-        setJobs([])
-        setTotal(0)
-        return
-      }
+      // No filters = browse mode: the API returns all active postings, newest
+      // first, so the page is alive on arrival instead of blank.
       setLoading(true)
 
       const params = new URLSearchParams()
@@ -206,10 +203,10 @@ export default function SearchPage() {
         <p className="mt-5 text-muted">No results found. Try broadening a filter.</p>
       )}
 
-      {!loading && hasAnyFilter && total > 0 && (
+      {!loading && total > 0 && (
         <p className="mt-5 text-sm text-muted">
           <span className="nums font-semibold text-ink">{total.toLocaleString()}</span>{" "}
-          result{total === 1 ? "" : "s"}
+          {hasAnyFilter ? `result${total === 1 ? "" : "s"}` : "active postings — newest first"}
         </p>
       )}
 

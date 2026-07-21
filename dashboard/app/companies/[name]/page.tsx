@@ -1,4 +1,6 @@
 import CompanyHistoryChart from "@/app/components/CompanyHistoryChart"
+export const dynamic = "force-dynamic"
+
 const API = process.env.NEXT_PUBLIC_API_URL
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000
 
@@ -50,7 +52,7 @@ export default async function CompanyPage({
   const companyName = decodeURIComponent(name)
   const res = await fetch(
     `${API}/api/companies/${encodeURIComponent(companyName)}/jobs`,
-    { cache: "no-store" }
+    { next: { revalidate: 300 } }
   )
   const jobs: Job[] = await res.json()
   // Active = canonical predicate (matches trending count): recently seen AND link not dead.

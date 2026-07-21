@@ -1,6 +1,8 @@
 "use client"
 
 import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
+import ChartTooltip from "./ChartTooltip"
+import { SOURCE_COLORS, AXIS_TICK, AXIS_STROKE, CURSOR_FILL } from "@/lib/chartTheme"
 
 interface WeekPoint {
   week: string
@@ -20,16 +22,19 @@ export default function CompanyHistoryChart({ data }: { data: WeekPoint[] }) {
     <div style={{ width: "100%", height: 220 }}>
       <ResponsiveContainer>
         <BarChart data={formatted} margin={{ top: 4, right: 8, left: 0, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E6F1" />
-          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" interval={0} angle={-30} textAnchor="end" height={50} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" width={30} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={AXIS_STROKE} />
+          <XAxis dataKey="label" tick={AXIS_TICK} stroke={AXIS_STROKE} interval={0} angle={-30} textAnchor="end" height={50} />
+          <YAxis allowDecimals={false} tick={AXIS_TICK} stroke={AXIS_STROKE} width={30} />
           <Tooltip
-            formatter={(value) => [`${value} posting${value === 1 ? "" : "s"}`, "Postings"]}
-            labelFormatter={(label) => `Week of ${label}`}
-            contentStyle={{ borderRadius: 8, border: "1px solid #E7E6F1", fontSize: 12 }}
-            cursor={{ fill: "#EEEDF9" }}
+            content={
+              <ChartTooltip
+                formatLabel={(l) => `Week of ${l}`}
+                formatValue={(v) => `${Number(v).toLocaleString()} posting${Number(v) === 1 ? "" : "s"}`}
+              />
+            }
+            cursor={{ fill: CURSOR_FILL }}
           />
-          <Bar dataKey="count" fill="#534AB7" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="count" name="Postings" fill={SOURCE_COLORS.bdjobs} radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

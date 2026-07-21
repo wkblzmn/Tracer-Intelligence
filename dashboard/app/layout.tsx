@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { IBM_Plex_Sans, IBM_Plex_Mono, Fraunces, Source_Serif_4 } from "next/font/google"
+import { IBM_Plex_Sans, IBM_Plex_Mono, Fraunces } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
 
@@ -21,12 +21,6 @@ const fraunces = Fraunces({
   variable: "--font-wordmark",
 })
 
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-serif",
-})
-
 export const metadata: Metadata = {
   title: "Tracer Intelligence",
   description: "Bangladesh Labor Market Intelligence",
@@ -46,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${fraunces.variable} ${sourceSerif.variable}`}
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}
     >
       <body
         className="min-h-screen antialiased"

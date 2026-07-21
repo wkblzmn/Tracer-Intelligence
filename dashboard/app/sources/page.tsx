@@ -1,9 +1,11 @@
 import SourceMatrix from "../components/SourceMatrix"
 
+export const dynamic = "force-dynamic"
+
 const API = process.env.NEXT_PUBLIC_API_URL
 
 async function getMatrix() {
-  const res = await fetch(`${API}/api/stats/source-matrix`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/source-matrix`, { next: { revalidate: 300 } })
   return res.json()
 }
 

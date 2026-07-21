@@ -1,4 +1,7 @@
 import SkillsChart from "../components/SkillsChart"
+import { SOURCE_COLORS } from "@/lib/chartTheme"
+
+export const dynamic = "force-dynamic"
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -11,13 +14,13 @@ interface SkillData {
 }
 
 const SOURCES = [
-  { key: "bdjobs", label: "Bdjobs", color: "#534AB7" },
-  { key: "skilljobs", label: "Skill.jobs", color: "#2F8F87" },
-  { key: "shomvob", label: "Shomvob", color: "#C2683C" },
+  { key: "bdjobs", label: "Bdjobs", color: SOURCE_COLORS.bdjobs },
+  { key: "skilljobs", label: "Skill.jobs", color: SOURCE_COLORS.skilljobs },
+  { key: "shomvob", label: "Shomvob", color: SOURCE_COLORS.shomvob },
 ] as const
 
 async function getSkills(): Promise<SkillData[]> {
-  const res = await fetch(`${API}/api/stats/skills?limit=50`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/skills?limit=50`, { next: { revalidate: 300 } })
   return res.json()
 }
 
@@ -57,9 +60,9 @@ export default async function SkillsPage() {
               <span className="flex-1 truncate text-sm font-medium text-ink">{s.skill}</span>
               <div className="flex items-center gap-2 w-40">
                 <div className="flex-1 bg-line rounded h-2 overflow-hidden flex">
-                  <div className="h-2" style={{ width: `${(s.bdjobs / max) * 100}%`, backgroundColor: "#534AB7" }} />
-                  <div className="h-2" style={{ width: `${(s.skilljobs / max) * 100}%`, backgroundColor: "#2F8F87" }} />
-                  <div className="h-2" style={{ width: `${(s.shomvob / max) * 100}%`, backgroundColor: "#C2683C" }} />
+                  <div className="h-2" style={{ width: `${(s.bdjobs / max) * 100}%`, backgroundColor: SOURCE_COLORS.bdjobs }} />
+                  <div className="h-2" style={{ width: `${(s.skilljobs / max) * 100}%`, backgroundColor: SOURCE_COLORS.skilljobs }} />
+                  <div className="h-2" style={{ width: `${(s.shomvob / max) * 100}%`, backgroundColor: SOURCE_COLORS.shomvob }} />
                 </div>
                 <span className="w-10 text-right text-sm font-semibold tabular-nums text-brand">
                   {s.total}

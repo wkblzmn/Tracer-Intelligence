@@ -1,10 +1,12 @@
 import DistrictSpecialization from "../components/DistrictSpecialization"
 import HubCards from "../components/HubCards"
 
+export const dynamic = "force-dynamic"
+
 const API = process.env.NEXT_PUBLIC_API_URL
 
 async function getGeo() {
-  const res = await fetch(`${API}/api/stats/geography`, { cache: "no-store" })
+  const res = await fetch(`${API}/api/stats/geography`, { next: { revalidate: 300 } })
   return res.json()
 }
 

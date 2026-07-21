@@ -9,6 +9,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
+import ChartTooltip from "./ChartTooltip"
+import { SOURCE_COLORS, AXIS_TICK, AXIS_STROKE, CURSOR_FILL } from "@/lib/chartTheme"
 
 interface SkillData {
   skill: string
@@ -28,16 +30,13 @@ export default function SkillsChart({ data }: { data: SkillData[] }) {
         layout="vertical"
         margin={{ top: 4, right: 50, left: 0, bottom: 4 }}
       >
-        <XAxis type="number" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" allowDecimals={false} />
-        <YAxis type="category" dataKey="skill" tick={{ fontSize: 11, fill: "#6C6C7E" }} stroke="#E7E6F1" width={200} />
-        <Tooltip
-          contentStyle={{ borderRadius: 8, border: "1px solid #E7E6F1", fontSize: 12 }}
-          cursor={{ fill: "#EEEDF9" }}
-        />
+        <XAxis type="number" tick={AXIS_TICK} stroke={AXIS_STROKE} allowDecimals={false} />
+        <YAxis type="category" dataKey="skill" tick={AXIS_TICK} stroke={AXIS_STROKE} width={200} />
+        <Tooltip content={<ChartTooltip />} cursor={{ fill: CURSOR_FILL }} />
         <Legend />
-        <Bar dataKey="bdjobs" stackId="a" fill="#534AB7" name="Bdjobs" />
-        <Bar dataKey="skilljobs" stackId="a" fill="#2F8F87" name="Skill.jobs" />
-        <Bar dataKey="shomvob" stackId="a" fill="#C2683C" name="Shomvob" radius={[0, 2, 2, 0]} />
+        <Bar dataKey="bdjobs" stackId="a" fill={SOURCE_COLORS.bdjobs} name="Bdjobs" />
+        <Bar dataKey="skilljobs" stackId="a" fill={SOURCE_COLORS.skilljobs} name="Skill.jobs" />
+        <Bar dataKey="shomvob" stackId="a" fill={SOURCE_COLORS.shomvob} name="Shomvob" radius={[0, 2, 2, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )
