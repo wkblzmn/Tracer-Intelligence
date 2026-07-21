@@ -1,5 +1,7 @@
 import LifespanChart from "../components/LifespanChart"
 import SkillCooccurrence from "../components/SkillCooccurrence"
+import SalaryBySector from "../components/SalaryBySector"
+import ConfidentialIndex from "../components/ConfidentialIndex"
 
 export const dynamic = "force-dynamic"
 
@@ -13,9 +15,13 @@ async function getCooc() {
   const res = await fetch(`${API}/api/stats/skill-cooccurrence`, { next: { revalidate: 300 } })
   return res.json()
 }
+async function getSignals() {
+  const res = await fetch(`${API}/api/stats/market-signals`, { next: { revalidate: 300 } })
+  return res.json()
+}
 
 export default async function InsightsPage() {
-  const [life, cooc] = await Promise.all([getLifespan(), getCooc()])
+  const [life, cooc, signals] = await Promise.all([getLifespan(), getCooc(), getSignals()])
   const m = life.medians ?? {}
   const c = life.counts ?? {}
   const rel = life.reliable ?? {}
@@ -46,6 +52,36 @@ export default async function InsightsPage() {
           long-lived postings ~ labour surplus or evergreen ads. A salary-free proxy for market tightness.
           Closed cohort only (descriptive, not a censored estimate). Sources whose closures cluster on a single
           date (usually a crawl gap, not real closures) are marked insufficient data rather than plotted.
+        </p>
+      </section>
+
+      {/* Advertised pay */}
+      <section className="mb-8 rounded-2xl border border-line bg-surface p-6">
+        <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand">Pay signal</div>
+        <h2 className="text-xl font-semibold text-ink">What sectors advertise, where disclosed</h2>
+        <p className="mb-5 mt-0.5 text-sm text-muted">
+          Monthly advertised salary band (p25–p75, tick = median), last 60 days — sorted by median
+        </p>
+        <SalaryBySector rows={signals.salary ?? []} />
+        <p className="nums mt-4 text-[11px] leading-relaxed text-muted">
+          FIG. 6 — Advertised pay by sector, disclosed postings only. Right column = disclosure rate
+          (share of the sector&rsquo;s postings that state any salary) — a signal in itself: sectors that
+          advertise pay are competing on it. Advertised ≠ actual compensation; no imputation applied.
+        </p>
+      </section>
+
+      {/* Confidential hiring */}
+      <section className="mb-8 rounded-2xl border border-line bg-surface p-6">
+        <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-brand">Anonymity</div>
+        <h2 className="text-xl font-semibold text-ink">Who hires without a name</h2>
+        <p className="mb-5 mt-0.5 text-sm text-muted">
+          Share of active postings from confidential employers (&ldquo;A Reputed Group&hellip;&rdquo;), by sector
+        </p>
+        <ConfidentialIndex rows={signals.confidential ?? []} />
+        <p className="nums mt-4 text-[11px] leading-relaxed text-muted">
+          FIG. 7 — Confidential-hiring share (sectors with 30+ active postings). High anonymity tracks
+          replacement hiring, sensitive expansions, or poor employer brand — a market-opacity measure
+          no posting count reveals.
         </p>
       </section>
 
