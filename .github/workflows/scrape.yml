@@ -41,6 +41,7 @@ jobs:
         if: always()
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PYTHONUNBUFFERED: "1"
         working-directory: tracer_intelligence
         run: |
           python link_checker.py
