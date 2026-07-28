@@ -1,0 +1,41 @@
+// Job-board category names are not everyday language — "Commercial" and
+// "Supply Chain/Procurement" mean little to most readers. Every category shown
+// anywhere in the story gets a plain description of the actual work.
+// Shared so two panels cannot drift into describing the same sector
+// differently.
+export const SECTOR_PLAIN: Record<string, string> = {
+  "Supply Chain/Procurement": "buying, storing and moving goods",
+  "Mechanic/Technician": "repairing and maintaining machines",
+  "Media/Advertisement/Event Mgt.": "advertising, media and running events",
+  Commercial: "import, export and trade paperwork",
+  "NGO/Development": "charities and development organisations",
+  "Security/Support Service": "guarding, cleaning and building upkeep",
+  "Agro (Plant/Animal/Fisheries)": "farming, livestock and fisheries",
+  "Graphic Designer": "designing logos, posters and visuals",
+  "IT/Telecommunication": "computers, software and phone networks",
+  "Healthcare/Medical": "hospitals, clinics and medical care",
+  Nurse: "nursing",
+  "Customer Service/Call Centre": "answering customer calls and messages",
+  Pharmaceutical: "making and selling medicines",
+  "Education/Training": "schools, colleges and training centres",
+  "Accounting/Finance": "company accounts, tax and handling money",
+  "Marketing/Sales": "selling and promoting products",
+  "Engineer/Architect": "engineering and building design",
+  "Garments/Textile": "clothing and fabric manufacturing",
+  "General Management/Admin": "office administration and management",
+  "HR/Org. Development": "hiring and managing staff",
+  "Bank/Non-Bank Fin. Institution": "banks and finance companies",
+  "Design/Creative": "creative and design work",
+  "Data Entry/Operator/BPO": "data entry and back-office work",
+  "Production/Operation": "factory production and operations",
+  "Hospitality/Travel/Tourism": "hotels, restaurants and travel",
+  "Law/Legal": "legal work",
+  "Receptionist/PS": "front desk and personal assistant roles",
+  Driver: "driving",
+  "Delivery Man": "delivering goods",
+  "Chef/Cook": "cooking in restaurants and hotels",
+  "Electrician/Electronics Technician": "electrical and electronics repair",
+  "Electrician/Construction/Repair": "electrical work, construction and repair",
+  "Driving/Motor Technician": "driving and vehicle repair",
+  Others: "work the boards did not categorise",
+}

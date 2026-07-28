@@ -16,19 +16,34 @@ jobs:
       - name: Install dependencies
         run: |
           pip install scrapy psycopg2-binary python-dotenv requests
+      # Both spiders write items to a feed file purely so the step can assert
+      # it scraped something. A spider that reaches zero items — blocked IP,
+      # changed endpoint, moved markup — otherwise exits 0 and CI stays green
+      # while the source silently goes stale. Skilljobs did exactly that
+      # between 2026-07-21 and 2026-07-27 and nothing reported it.
       - name: Run Bdjobs scraper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
         run: |
-          python -m scrapy crawl bdjobs
+          python -m scrapy crawl bdjobs -O /tmp/bdjobs.jl
+          if [ ! -s /tmp/bdjobs.jl ]; then
+            echo "::error::Bdjobs scraped 0 items — source is not reaching the database"
+            exit 1
+          fi
+          echo "Bdjobs items: $(wc -l < /tmp/bdjobs.jl)"
       - name: Run Skilljobs scraper
         if: always()
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
         run: |
-          python -m scrapy crawl skilljobs
+          python -m scrapy crawl skilljobs -O /tmp/skilljobs.jl
+          if [ ! -s /tmp/skilljobs.jl ]; then
+            echo "::error::Skilljobs scraped 0 items — source is not reaching the database"
+            exit 1
+          fi
+          echo "Skilljobs items: $(wc -l < /tmp/skilljobs.jl)"
       - name: Check for dead job links
         if: always()
         env:

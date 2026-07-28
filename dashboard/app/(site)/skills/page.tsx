@@ -1,4 +1,4 @@
-import SkillsChart from "../components/SkillsChart"
+import SkillsChart from "@/app/components/SkillsChart"
 import { SOURCE_COLORS } from "@/lib/chartTheme"
 
 export const dynamic = "force-dynamic"

@@ -1,7 +1,7 @@
-import LifespanChart from "../components/LifespanChart"
-import SkillCooccurrence from "../components/SkillCooccurrence"
-import SalaryBySector from "../components/SalaryBySector"
-import ConfidentialIndex from "../components/ConfidentialIndex"
+import LifespanChart from "@/app/components/LifespanChart"
+import SkillCooccurrence from "@/app/components/SkillCooccurrence"
+import SalaryBySector from "@/app/components/SalaryBySector"
+import ConfidentialIndex from "@/app/components/ConfidentialIndex"
 
 export const dynamic = "force-dynamic"
 

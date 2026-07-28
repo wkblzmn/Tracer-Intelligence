@@ -45,5 +45,42 @@ export async function GET(request: NextRequest) {
     .sort((a, b) => b.total - a.total)
     .slice(0, limit)
 
-  return NextResponse.json(result)
+  // Opt-in richer shape. The existing /skills page consumes a bare array, so
+  // the default response is unchanged; only callers that ask get the wrapper.
+  if (request.nextUrl.searchParams.get("withCoverage") !== "1") {
+    return NextResponse.json(result)
+  }
+
+  // How much of the live market actually carries skill data. This is the
+  // number the story panel has to disclose: skills for bdjobs and shomvob are
+  // matched against a fixed dictionary, so anything outside that word list is
+  // invisible, and most postings match nothing at all.
+  const { rows: cov } = await pool.query(
+    `SELECT jp.source,
+            COUNT(*) AS active,
+            COUNT(*) FILTER (
+              WHERE EXISTS (SELECT 1 FROM job_skills js WHERE js.posting_id = jp.id)
+            ) AS with_skills
+     FROM job_postings jp
+     WHERE jp.duplicate_of IS NULL
+       AND jp.last_seen_at >= NOW() - INTERVAL '3 days'
+     GROUP BY jp.source`
+  )
+
+  const coverage = cov.map((r) => ({
+    source: r.source as string,
+    active: Number(r.active),
+    with_skills: Number(r.with_skills),
+    pct: Number(r.active) ? Math.round((Number(r.with_skills) / Number(r.active)) * 100) : 0,
+  }))
+  const totalActive = coverage.reduce((s, c) => s + c.active, 0)
+  const totalWith = coverage.reduce((s, c) => s + c.with_skills, 0)
+
+  return NextResponse.json({
+    skills: result,
+    coverage,
+    total_active: totalActive,
+    total_with_skills: totalWith,
+    overall_pct: totalActive ? Math.round((totalWith / totalActive) * 100) : 0,
+  })
 }

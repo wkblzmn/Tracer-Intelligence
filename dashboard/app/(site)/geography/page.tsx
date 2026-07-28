@@ -1,5 +1,5 @@
-import DistrictSpecialization from "../components/DistrictSpecialization"
-import HubCards from "../components/HubCards"
+import DistrictSpecialization from "@/app/components/DistrictSpecialization"
+import HubCards from "@/app/components/HubCards"
 
 export const dynamic = "force-dynamic"
 
