@@ -9,3 +9,5 @@ node_modules/
 
 # Scrapy
 *.log
+# Local agent/editor tooling config
+.claude/
