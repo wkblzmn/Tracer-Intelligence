@@ -1,4 +1,4 @@
-import SourceMatrix from "../components/SourceMatrix"
+import SourceMatrix from "@/app/components/SourceMatrix"
 
 export const dynamic = "force-dynamic"
 

@@ -11,7 +11,21 @@
   --color-surface: #FFFFFF;
 }
 
+/* Reserve the scrollbar gutter permanently. Two reasons: it stops the whole
+   site shifting sideways when a page grows tall enough to gain a scrollbar,
+   and it makes documentElement.clientWidth a stable measurement on /story —
+   otherwise the first panel measurement happens before the pin has created
+   any scroll height, so it reads a width that is one scrollbar too wide. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
+  /* Set here, not as an inline style prop on <body> in layout.tsx. React 19
+     serializes that prop as `font-family` on the server but compares it as
+     `fontFamily` on the client, and the resulting mismatch aborts hydration
+     of everything below <body> — no effects run, so /story never fetches. */
+  font-family: var(--font-sans), sans-serif;
   background-color: var(--color-canvas);
   color: var(--color-ink);
 }
@@ -22,6 +36,32 @@ body {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
 }
+
+/* Nav pill — fills left-to-right as the reader moves through the panels that
+   nav item owns. `--fill` is written straight onto the element by
+   ScrollTrigger each frame, deliberately NOT through React state: a per-frame
+   setState would re-render the page on every scroll tick, which is exactly
+   the stutter that had to be engineered out of the track.
+   The soft 18% blend either side of the edge is what stops it reading as a
+   hard progress bar. */
+.nav-pill {
+  --fill: 0%;
+  background-color: var(--color-brand-soft);
+  background-image: linear-gradient(
+    90deg,
+    rgba(83, 74, 183, 0.6) calc(var(--fill) - 9%),
+    rgba(83, 74, 183, 0) calc(var(--fill) + 9%)
+  );
+}
+
+/* Horizontal story track.
+   One panel == the live viewport width EXCLUDING the vertical scrollbar.
+   `100vw` counts the scrollbar, so w-screen panels are ~15px too wide and
+   every panel loses its right edge. --panel-w is recomputed from
+   documentElement.clientWidth on every ScrollTrigger refresh (which fires on
+   resize), so this tracks any screen size instead of being measured once.
+   The 100vw fallback only applies before hydration. */
+.story-panel { width: var(--panel-w, 100vw); }
 
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
