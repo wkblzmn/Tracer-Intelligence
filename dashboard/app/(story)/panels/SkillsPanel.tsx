@@ -150,10 +150,12 @@ export default function SkillsPanel({ skills }: Props) {
 
           <div className="mt-auto shrink-0 border-t border-line pt-3">
             <a
-              href="/search"
+              href="/skills"
+              target="_blank"
+              rel="noopener"
               className="text-[12px] font-medium text-brand hover:underline"
             >
-              Search adverts by skill yourself →
+              See every skill and the full breakdown →
             </a>
           </div>
         </div>

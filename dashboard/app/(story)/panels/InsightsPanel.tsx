@@ -161,9 +161,11 @@ export default function InsightsPanel({ marketSignals }: Props) {
           <div className="mt-auto shrink-0 border-t border-line pt-3">
             <a
               href="/insights"
+              target="_blank"
+              rel="noopener"
               className="text-[12px] font-medium text-brand hover:underline"
             >
-              See the other market signals →
+              See all market signals in detail →
             </a>
           </div>
         </div>

@@ -170,9 +170,11 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
           <div className="mt-auto shrink-0 border-t border-line pt-2.5">
             <a
               href="/sources"
+              target="_blank"
+              rel="noopener"
               className="text-[12px] font-medium text-brand hover:underline"
             >
-              See the full board-by-board breakdown →
+              See the full source × sector matrix →
             </a>
           </div>
         </div>

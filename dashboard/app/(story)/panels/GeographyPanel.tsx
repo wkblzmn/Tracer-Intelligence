@@ -119,6 +119,17 @@ export default function GeographyPanel({ geography }: Props) {
               )
             })}
           </div>
+
+          {/* New tab, like every other route out of the story: the reader
+              keeps their place in the track while they dig into the detail. */}
+          <a
+            href="/geography"
+            target="_blank"
+            rel="noopener"
+            className="mt-3 shrink-0 border-t border-line pt-3 text-[12px] font-medium text-brand hover:underline"
+          >
+            See all districts and hubs in detail →
+          </a>
         </div>
       </div>
     </div>

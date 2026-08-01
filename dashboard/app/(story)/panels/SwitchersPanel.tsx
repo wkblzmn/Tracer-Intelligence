@@ -215,6 +215,8 @@ export default function SwitchersPanel({ momentum }: Props) {
           <div className="mt-auto shrink-0 border-t border-line pt-3">
             <a
               href="/search"
+              target="_blank"
+              rel="noopener"
               className="text-[12px] font-medium text-brand hover:underline"
             >
               Look up any job yourself →
