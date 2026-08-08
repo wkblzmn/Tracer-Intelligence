@@ -31,17 +31,29 @@ jobs:
       - name: Install dependencies
         run: |
           pip install scrapy psycopg2-binary python-dotenv requests
-      # The spider writes items to a feed file purely so the step can assert it
-      # scraped something. A spider that reaches zero items — blocked IP,
-      # changed endpoint, moved markup — otherwise exits 0 and CI stays green
-      # while the source silently goes stale. Skilljobs did exactly that
-      # between 2026-07-21 and 2026-07-27 and nothing reported it.
+      # The spider writes items to a feed file so the step can assert it scraped
+      # not just something, but nearly everything.
+      #
+      # "Not zero" was too weak a test. Pagination used to chain page-to-page,
+      # so one dropped request ended the crawl at whatever page it reached —
+      # page 71 of 116 on 2026-08-08, page 7 on 2026-08-07 — and every one of
+      # those runs passed this step and reported green, because a truncated file
+      # is not an empty one. Roughly 2,270 live postings aged out of the site's
+      # active window that way. Pagination is fanned out now (see the note in
+      # spiders/bdjobs.py), but the check has to be able to see the difference.
+      #
+      # common.total_records_found is the board's own count of what it is
+      # advertising, so the run is measured against the source of truth rather
+      # than against a hardcoded expectation that would rot.
       - name: Run Bdjobs scraper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         working-directory: tracer_intelligence
         run: |
           python -m scrapy crawl bdjobs -O /tmp/bdjobs.jl
+          items=$(wc -l < /tmp/bdjobs.jl)
+          echo "Bdjobs items: $items"
+
           if [ ! -s /tmp/bdjobs.jl ]; then
             echo "::error::Bdjobs scraped 0 items — source is not reaching the database"
             echo "--- what the runner actually receives ---"
@@ -49,7 +61,21 @@ jobs:
               "https://api.bdjobs.com/Jobs/api/JobSearch/GetJobSearch?pg=1&rpp=1&isPro=0&ToggleJobs=true&isFresher=false" || true
             exit 1
           fi
-          echo "Bdjobs items: $(wc -l < /tmp/bdjobs.jl)"
+
+          expected=$(curl -s "https://api.bdjobs.com/Jobs/api/JobSearch/GetJobSearch?pg=1&rpp=1&isPro=0&ToggleJobs=true&isFresher=false" \
+            | python -c "import json,sys; print(json.load(sys.stdin).get('common',{}).get('total_records_found') or 0)")
+          echo "Board reports $expected records live"
+
+          if [ "$expected" -gt 0 ]; then
+            floor=$(( expected * 90 / 100 ))
+            if [ "$items" -lt "$floor" ]; then
+              echo "::error::Bdjobs run truncated — $items items vs $expected live on the board (floor $floor). Postings not re-seen this run will age out of the 3-day active window."
+              exit 1
+            fi
+            echo "Coverage OK: $items / $expected"
+          else
+            echo "::warning::Board returned no record count — coverage unverified this run"
+          fi
       # if: always() so a failed scrape still gets its links checked rather
       # than compounding one stale source with another.
       - name: Check for dead job links

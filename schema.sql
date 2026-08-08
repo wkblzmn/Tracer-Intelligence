@@ -44,8 +44,9 @@ CREATE TABLE IF NOT EXISTS job_postings (
     is_confidential BOOLEAN      NOT NULL DEFAULT FALSE,   -- placeholder employer ("A Reputed Group")
     duplicate_of    BIGINT       REFERENCES job_postings(id),  -- same-source repost -> canonical row; NULL = canonical
     last_seen_at    TIMESTAMP,                             -- bumped every run the listing is still live
-    link_dead       BOOLEAN      NOT NULL DEFAULT FALSE,   -- source_url returned a genuine 404
+    link_dead       BOOLEAN      NOT NULL DEFAULT FALSE,   -- source_url 404'd twice running; reversible
     link_checked_at TIMESTAMP,                             -- last link_checker.py visit
+    link_404_streak INTEGER      NOT NULL DEFAULT 0,       -- consecutive 404s; 2 = dead. See link_checker.py
     district        TEXT,                                  -- from location_map.py; NULL = unmapped/national/overseas
     hub             TEXT                                   -- analytical industrial cluster
 );

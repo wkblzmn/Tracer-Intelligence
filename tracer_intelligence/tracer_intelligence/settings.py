@@ -26,6 +26,23 @@ ROBOTSTXT_OBEY = False
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
 DOWNLOAD_DELAY = 2
 
+# Retry policy
+#
+# A single dropped request used to cost a whole crawl, because pagination was
+# chained (see the note in spiders/bdjobs.py). Pagination is fanned out now, so
+# a give-up costs one page — but a page of 50 postings is still 50 postings that
+# fall out of the active window, so it is worth retrying harder than the
+# default 2 attempts.
+#
+# 429 and 403 are in the list deliberately: both are what a board returns when
+# it decides it has seen enough of you for now, and both are often transient
+# within a single run. Skill.jobs' 403 from datacenter IPs is NOT transient
+# (see .github/workflows/scrape.yml) — retrying it just costs a few seconds
+# before the same conclusion, which is an acceptable price for bdjobs' benefit.
+RETRY_TIMES = 5
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 403]
+DOWNLOAD_TIMEOUT = 30
+
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
 
