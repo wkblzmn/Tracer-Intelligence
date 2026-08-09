@@ -107,6 +107,11 @@ totals AS (
   FROM solid GROUP BY role HAVING SUM(n) >= 20
 )`
 
+// One constant for both the widest-roles list and its sector split. They were
+// 6 and 3, so roles 4-6 came back with `breakdown: []` — harmless while nothing
+// rendered them, a row of empty bars as soon as something did.
+const WIDEST_LIMIT = 6
+
 export async function GET() {
   const [dist, portable, locked, breakdown, examples] = await Promise.all([
     // How many roles sit at each level of breadth — the headline shape.
@@ -115,7 +120,7 @@ export async function GET() {
     // The widest-travelling roles.
     pool.query(`${BASE}
       SELECT role, sectors, postings, employers FROM totals
-      ORDER BY sectors DESC, postings DESC LIMIT 6`),
+      ORDER BY sectors DESC, postings DESC LIMIT ${WIDEST_LIMIT}`),
     // Single-sector roles, by how many people they employ.
     pool.query(`${BASE}
       SELECT role, postings, employers FROM totals
@@ -123,7 +128,7 @@ export async function GET() {
     // Sector split for the widest roles, so "4 sectors" can be shown honestly
     // as the lopsided thing it usually is.
     pool.query(`${BASE}
-      , top AS (SELECT role FROM totals ORDER BY sectors DESC, postings DESC LIMIT 3)
+      , top AS (SELECT role FROM totals ORDER BY sectors DESC, postings DESC LIMIT ${WIDEST_LIMIT})
       SELECT s.role, s.sector, s.n AS postings
       FROM solid s JOIN top USING (role) ORDER BY s.role, s.n DESC`),
     // Two named examples per breadth band, each with the industries it sits

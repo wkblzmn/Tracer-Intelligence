@@ -39,6 +39,7 @@ export type SiteData = {
   applicationWindow: unknown
   topRoles: unknown
   momentum: unknown
+  portability: unknown
   sourceMatrix: unknown
   // the Overview tail
   overview: DataPoint[] | null

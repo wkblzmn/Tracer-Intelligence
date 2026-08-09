@@ -23,6 +23,7 @@ export type MomentumPayload = {
     block_days: number
   }
   caveats?: {
+    gap_tolerance_days: number
     gap_days: number
     gap_ended: string | null
     worst_gap_days: number
@@ -33,6 +34,20 @@ export type MomentumPayload = {
     total_crawl_days: number
     clean_days: number
     continuous_from: string | null
+    // Days inside the window the collector missed — tolerated, but named.
+    missing_days?: string[]
+    // The asymmetry that actually threatens the comparison. See the endpoint.
+    repair?: {
+      late_after_days: number
+      earlier_total: number
+      earlier_late: number
+      earlier_late_share: number
+      recent_total: number
+      recent_late: number
+      recent_late_share: number
+      delta_all: number
+      delta_excluding_late: number
+    }
     rising_count: number
     sector_count: number
     one_directional: boolean
@@ -224,6 +239,66 @@ export default function SwitchersPanel({ momentum }: Props) {
   const topUp = risers[0]
   const topDown = fallers[0]
 
+  // Built as data so the count in the heading cannot drift from the number of
+  // reasons shown, and so a caveat that stops applying stops being printed.
+  const missing = c?.missing_days ?? []
+  const rep = c?.repair
+  const caveats: { title: string; body: string }[] = []
+
+  if (missing.length > 0) {
+    caveats.push({
+      title:
+        missing.length === 1
+          ? "One day is missing from this window"
+          : `${missing.length} days are missing from this window`,
+      // Every body here is kept short on purpose: this row is full-width below
+      // the chart, so each extra line it takes is a line the bars lose, and at
+      // 720px tall that crops them.
+      body:
+        `Our collector did not run on ${missing.map(fmtDay).join(", ")}; adverts ` +
+        `that opened and closed ${
+          missing.length === 1 ? "that day" : "those days"
+        } were never recorded. We tolerate ${
+          missing.length === 1 ? "one missing day" : "a few missing days"
+        } rather than discard the month around ${
+          missing.length === 1 ? "it" : "them"
+        }.`,
+    })
+  } else if (c?.worst_gap_days) {
+    caveats.push({
+      title: `We stopped collecting for ${c.worst_gap_days} days`,
+      body:
+        `Between ${fmtDay(c.worst_gap_from)} and ${fmtDay(c.worst_gap_to)} our ` +
+        `collector was not running. Jobs that appeared and closed in those days ` +
+        `were never recorded, and cannot be recovered.`,
+    })
+  }
+
+  if (rep) {
+    caveats.push({
+      title: "The second half was repaired; the first could not be",
+      body:
+        `A catch-up crawl only recovers adverts still open when it runs, so it ` +
+        `topped up the second half — ${rep.recent_late_share}% recorded late ` +
+        `against ${rep.earlier_late_share}% of the first. That flatters growth: ` +
+        `excluding late records the change is ${rep.delta_excluding_late}, ` +
+        `not ${rep.delta_all}.`,
+    })
+  }
+
+  caveats.push({
+    title: `${w?.days ?? 0} days is a very short time`,
+    body:
+      "One large company advertising twenty jobs at once can make a whole field " +
+      "look like it is growing. Real trends need months, not weeks.",
+  })
+  caveats.push({
+    title: "Fridays and Saturdays are quiet",
+    body:
+      "Far fewer jobs are posted at the weekend, so if one half of the count " +
+      "holds more weekend days than the other, that alone shifts the result.",
+  })
+
   return (
     <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
       <PanelHeading />
@@ -335,7 +410,7 @@ export default function SwitchersPanel({ momentum }: Props) {
         </div>
       </div>
 
-      {/* ---- bottom: the caveat, full width ---- */}
+      {/* ---- bottom: the caveats, full width ---- */}
       <div
         data-anim
         className="mt-4 shrink-0 rounded-xl border border-line bg-surface px-6 py-4"
@@ -345,41 +420,24 @@ export default function SwitchersPanel({ momentum }: Props) {
             Please do not take this as fact yet
           </h3>
           <p className="text-[12px] text-muted">
-            Three honest reasons these numbers may be wrong — we would rather
-            show you the working than pretend it is settled.
+            {caveats.length} honest reasons these numbers may be wrong — we
+            would rather show you the working than pretend it is settled.
           </p>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-6 text-[12px] leading-relaxed text-muted">
-          <div>
-            <p className="font-medium text-ink">
-              1. We stopped collecting for {c?.worst_gap_days ?? 0} days
-            </p>
-            <p className="mt-0.5">
-              Between {fmtDay(c?.worst_gap_from)} and {fmtDay(c?.worst_gap_to)}{" "}
-              our collector was not running. Jobs that appeared and closed in
-              those days were never recorded, and cannot be recovered.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium text-ink">
-              2. {w?.days ?? 0} days is a very short time
-            </p>
-            <p className="mt-0.5">
-              One large company advertising twenty jobs at once can make a whole
-              field look like it is growing. Real trends need months, not weeks.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium text-ink">
-              3. Fridays and Saturdays are quiet
-            </p>
-            <p className="mt-0.5">
-              Far fewer jobs are posted at the weekend, so if one half of the
-              count holds more weekend days than the other, that alone shifts
-              the result.
-            </p>
-          </div>
+        <div
+          className={`mt-2.5 grid gap-5 text-[11px] leading-snug text-muted ${
+            caveats.length === 4 ? "grid-cols-4" : "grid-cols-3"
+          }`}
+        >
+          {caveats.map((cv, i) => (
+            <div key={cv.title}>
+              <p className="font-medium text-ink">
+                {i + 1}. {cv.title}
+              </p>
+              <p className="mt-0.5">{cv.body}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

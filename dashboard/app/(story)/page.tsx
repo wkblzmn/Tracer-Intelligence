@@ -11,6 +11,7 @@ import SeekersPayPanel from "./panels/SeekersPayPanel"
 import SeekersMarketPanel from "./panels/SeekersMarketPanel"
 import SwitchersIntroPanel from "./panels/SwitchersIntroPanel"
 import SwitchersPanel from "./panels/SwitchersPanel"
+import SwitchersPortabilityPanel from "./panels/SwitchersPortabilityPanel"
 import SkillsPanel from "./panels/SkillsPanel"
 import InsightsPanel from "./panels/InsightsPanel"
 import CoveragePanel from "./panels/CoveragePanel"
@@ -34,10 +35,10 @@ const ENDPOINTS = {
   opportunity: "/api/stats/opportunity",
   applicationWindow: "/api/stats/application-window",
   topRoles: "/api/stats/top-roles",
-  // NOTE: /api/stats/portability still exists and is validated, but nothing
-  // renders it since the switchers panel moved to sector momentum. Left
-  // unfetched rather than deleted — it is the obvious basis for a students or
-  // skills panel later.
+  // Portability now renders: it answers the switcher's structural question
+  // (which titles are advertised across industries) without depending on the
+  // continuous-collection window that sector momentum needs.
+  portability: "/api/stats/portability",
   momentum: "/api/stats/sector-momentum",
   sourceMatrix: "/api/stats/source-matrix",
   // The Overview tail — the old homepage, now the vertical section that
@@ -60,6 +61,15 @@ const PANELS = [
   { id: "seekers-pay", label: "For seekers", nav: false, Component: SeekersPayPanel },
   { id: "seekers-market", label: "For seekers", nav: false, Component: SeekersMarketPanel },
   { id: "switchers-intro", label: "For switchers", nav: true, Component: SwitchersIntroPanel },
+  // Portability first: it stands on 120 days of first-party fields, so the
+  // switchers section leads with what holds and follows with the measurement
+  // that is still young enough to need four caveats.
+  {
+    id: "switchers-portability",
+    label: "For switchers",
+    nav: false,
+    Component: SwitchersPortabilityPanel,
+  },
   { id: "switchers", label: "For switchers", nav: false, Component: SwitchersPanel },
   { id: "students", label: "For students", nav: true, Component: null },
   { id: "skills", label: "Skills", nav: true, Component: SkillsPanel },
@@ -329,6 +339,7 @@ export default function StoryPage() {
                 applicationWindow={data?.applicationWindow ?? null}
                 topRoles={data?.topRoles ?? null}
                 momentum={data?.momentum ?? null}
+                portability={data?.portability ?? null}
                 skills={data?.skills ?? null}
                 marketSignals={data?.marketSignals ?? null}
                 sourceMatrix={data?.sourceMatrix ?? null}
