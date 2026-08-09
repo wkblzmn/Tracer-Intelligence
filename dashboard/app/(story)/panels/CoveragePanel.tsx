@@ -43,7 +43,6 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
   const sectors = sourceMatrix?.sectors ?? []
   const grand = totals ? ORDER.reduce((s, k) => s + (totals[k] ?? 0), 0) : 0
   const c = momentum?.caveats
-  const w = momentum?.window
 
   // Three per board, not four: nine rows plus headings is what fits a
   // 720px-tall screen without cropping, and the point is what each board
@@ -200,8 +199,16 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
             <p className="mt-0.5">
               A posting is checked daily until it disappears, which is how we
               know when a job closed rather than relying on the employer. We
-              have been collecting since {fmtDay(c?.first_crawl)}, and every day
-              without a break since {fmtDay(w?.from)}.
+              have been collecting since {fmtDay(c?.first_crawl)}
+              {c?.continuous_from ? (
+                <>, and every day without a break since {fmtDay(c.continuous_from)}.</>
+              ) : (
+                // Claiming an unbroken run while collection is still
+                // re-establishing itself after a break would be the one thing
+                // this panel exists to avoid.
+                <>. Daily collection is re-establishing itself after a recent
+                break, so there is no unbroken run to claim here yet.</>
+              )}
             </p>
           </div>
           <div>

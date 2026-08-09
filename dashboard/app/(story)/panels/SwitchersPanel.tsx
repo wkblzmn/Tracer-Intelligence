@@ -12,6 +12,8 @@ export type MomentumSector = {
 
 export type MomentumPayload = {
   usable: boolean
+  reason?: string
+  min_clean_days?: number
   window?: {
     from: string
     to: string
@@ -27,7 +29,10 @@ export type MomentumPayload = {
     worst_gap_from: string | null
     worst_gap_to: string | null
     first_crawl: string | null
+    last_crawl: string | null
     total_crawl_days: number
+    clean_days: number
+    continuous_from: string | null
     rising_count: number
     sector_count: number
     one_directional: boolean
@@ -85,7 +90,119 @@ function BarRow({
   )
 }
 
+const PanelHeading = () => (
+  <header data-anim className="shrink-0 pb-3">
+    <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
+      For switchers
+    </p>
+    <h2 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">
+      Which kinds of work are advertising more jobs than before?
+    </h2>
+  </header>
+)
+
+/**
+ * Shown when the endpoint reports usable: false.
+ *
+ * Without this the panel rendered its normal layout against an absent window
+ * and said "two 0-day stretches", "counted every job advert for 0 days",
+ * "we stopped collecting for 0 days", "Between — and —", and drew a legend
+ * above no bars. Every one of those was a placeholder presented as a finding,
+ * on the one panel whose whole argument is that it will show its working
+ * instead of pretending to be settled.
+ */
+function NotYetMeasurable({ momentum }: { momentum: MomentumPayload | null }) {
+  const c = momentum?.caveats
+  const need = momentum?.min_clean_days ?? 0
+  const have = c?.clean_days ?? 0
+  const short = Math.max(0, need - have)
+
+  return (
+    <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
+      <PanelHeading />
+
+      <div className="grid min-h-0 flex-1 grid-cols-5 gap-4">
+        <div
+          data-anim
+          className="col-span-3 flex min-h-0 flex-col justify-center rounded-xl border border-line bg-surface px-8 py-4"
+        >
+          <h3 className="text-base font-semibold text-ink">
+            We cannot answer this honestly today
+          </h3>
+          <div className="mt-2.5 space-y-2 text-[13px] leading-relaxed text-muted">
+            <p>
+              Comparing one stretch of days against another only means something
+              if the collector ran on every day of both. Right now it has{" "}
+              <span className="font-medium text-ink">
+                {have} unbroken {have === 1 ? "day" : "days"}
+              </span>{" "}
+              on record, and this comparison needs {need}.
+            </p>
+            {c?.gap_ended && (
+              <p>
+                Daily collection last broke off and resumed on{" "}
+                {fmtDay(c.gap_ended)}. The first day back is always set aside as
+                well, because it carries the backlog that built up while nothing
+                was running and would inflate whichever half it landed in.
+              </p>
+            )}
+            <p>
+              So the panel shows nothing rather than two stretches that are not
+              comparable. It fills in on its own after{" "}
+              {short === 1 ? "one more day" : `${short} more days`} of unbroken
+              collection — there is nothing to switch on.
+            </p>
+          </div>
+        </div>
+
+        <div
+          data-anim
+          className="col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
+        >
+          <h3 className="shrink-0 text-base font-semibold text-ink">
+            What is still solid
+          </h3>
+          <div className="mt-2.5 space-y-2 text-xs leading-relaxed text-muted">
+            <p>
+              Only this comparison depends on unbroken days. Counts of what is
+              open now, what it pays, and how long it stays open are each read
+              from the adverts themselves and are unaffected.
+            </p>
+            {c?.first_crawl && (
+              <p>
+                We have been collecting since {fmtDay(c.first_crawl)}, across{" "}
+                {c.total_crawl_days} days of records.
+              </p>
+            )}
+            {c?.worst_gap_days ? (
+              <p>
+                <span className="font-medium text-ink">The hole we cannot fill.</span>{" "}
+                Between {fmtDay(c.worst_gap_from)} and {fmtDay(c.worst_gap_to)}{" "}
+                nothing was collected. Adverts that opened and closed inside
+                those {c.worst_gap_days} days were never recorded, and no amount
+                of later crawling brings them back.
+              </p>
+            ) : null}
+          </div>
+          <div className="mt-auto shrink-0 border-t border-line pt-3">
+            <a
+              href="/search"
+              target="_blank"
+              rel="noopener"
+              className="text-[12px] font-medium text-brand hover:underline"
+            >
+              Look up any job yourself →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function SwitchersPanel({ momentum }: Props) {
+  if (!momentum?.usable) return <NotYetMeasurable momentum={momentum} />
+
   const sectors = momentum?.sectors ?? []
   const w = momentum?.window
   const c = momentum?.caveats
@@ -109,14 +226,7 @@ export default function SwitchersPanel({ momentum }: Props) {
 
   return (
     <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
-      <header data-anim className="shrink-0 pb-3">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
-          For switchers
-        </p>
-        <h2 className="mt-1.5 text-3xl font-semibold tracking-tight text-ink">
-          Which kinds of work are advertising more jobs than before?
-        </h2>
-      </header>
+      <PanelHeading />
 
       {/* ---- middle: graph on the left, explanation on the right ---- */}
       <div className="grid min-h-0 flex-1 grid-cols-5 gap-4">

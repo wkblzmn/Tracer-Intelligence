@@ -17,6 +17,9 @@ import pool from "@/lib/db"
 
 type Day = { day: string; rows: number }
 
+// Two blocks of this many days each, minimum, before a comparison is offered.
+const MIN_CLEAN_DAYS = 4
+
 export async function GET() {
   // The crawl log: which days the scraper actually inserted anything.
   const { rows: crawlRows } = await pool.query(
@@ -62,13 +65,37 @@ export async function GET() {
   // Drop the first post-gap day: it is catch-up, not a normal day.
   const clean = afterGap.slice(1)
 
-  if (clean.length < 4) {
+  // What is known about collection history is known whether or not the
+  // comparison can be made, so it is assembled once and returned either way.
+  // The unusable branch used to drop all of it, which is why the coverage panel
+  // read "collecting since —" and "a 0-day hole in it": the figures existed,
+  // the payload just withheld them.
+  const history = {
+    gap_days: gapDays,
+    gap_ended: gapEnd,
+    worst_gap_days: worstGapDays,
+    worst_gap_from: worstGapFrom,
+    worst_gap_to: worstGapTo,
+    first_crawl: days[0]?.day ?? null,
+    last_crawl: days[days.length - 1]?.day ?? null,
+    total_crawl_days: days.length,
+    clean_days: clean.length,
+    // The day unbroken collection resumed — null while there is no such day,
+    // which is a fact worth stating rather than rendering as a dash.
+    continuous_from: clean[0]?.day ?? null,
+  }
+
+  if (clean.length < MIN_CLEAN_DAYS) {
     return NextResponse.json({
       usable: false,
       reason: "not enough continuously-crawled days to compare anything",
-      clean_days: clean.length,
-      gap_days: gapDays,
-      gap_ended: gapEnd,
+      min_clean_days: MIN_CLEAN_DAYS,
+      caveats: {
+        ...history,
+        rising_count: 0,
+        sector_count: 0,
+        one_directional: false,
+      },
       sectors: [],
     })
   }
@@ -116,6 +143,7 @@ export async function GET() {
 
   return NextResponse.json({
     usable: true,
+    min_clean_days: MIN_CLEAN_DAYS,
     window: {
       from,
       to,
@@ -127,13 +155,7 @@ export async function GET() {
     // Everything the panel needs to state its own limits, computed rather
     // than written down, so it cannot drift out of date.
     caveats: {
-      gap_days: gapDays,
-      gap_ended: gapEnd,
-      worst_gap_days: worstGapDays,
-      worst_gap_from: worstGapFrom,
-      worst_gap_to: worstGapTo,
-      first_crawl: days[0]?.day ?? null,
-      total_crawl_days: days.length,
+      ...history,
       rising_count: rising,
       sector_count: sectors.length,
       // The tell: if nearly every sector moves the same way, the cause is the
