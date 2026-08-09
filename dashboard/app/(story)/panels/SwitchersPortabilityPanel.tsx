@@ -93,7 +93,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
   const widest = p?.portable?.[0]
 
   return (
-    <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
+    <div className="flex min-h-screen w-full flex-col px-5 pb-10 pt-20 md:h-full md:min-h-0 md:px-10 md:pb-5 md:pt-24 lg:px-14">
       <header data-anim className="shrink-0 pb-3">
         <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
           For switchers
@@ -103,11 +103,11 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
         </h2>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-5 gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-5">
         {/* GRAPH */}
         <div
           data-anim
-          className="col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
+          className="col-span-1 md:col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
         >
           <div className="shrink-0">
             <h3 className="text-base font-semibold text-ink">
@@ -133,7 +133,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
                 {locked.map((r) => (
                   <div key={r.role} className="flex items-center gap-3">
                     <span
-                      className="w-40 shrink-0 truncate text-[10px] text-ink"
+                      className="w-24 md:w-40 shrink-0 truncate text-[10px] text-ink"
                       title={r.role}
                     >
                       {titleCase(r.role)}
@@ -144,7 +144,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
                         style={{ backgroundColor: "rgba(194,104,60,0.85)" }}
                       />
                     </div>
-                    <span className="w-24 shrink-0 text-right font-mono text-[10px] text-muted">
+                    <span className="w-14 md:w-24 shrink-0 text-right font-mono text-[10px] text-muted">
                       {r.postings} ads · {r.employers} firms
                     </span>
                   </div>
@@ -157,7 +157,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
         {/* EXPLANATION */}
         <div
           data-anim
-          className="col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
+          className="col-span-1 md:col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
         >
           <h3 className="shrink-0 text-base font-semibold text-ink">
             What you are looking at
@@ -227,7 +227,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
         data-anim
         className="mt-4 shrink-0 rounded-xl border border-line bg-surface px-6 py-4"
       >
-        <div className="flex items-baseline gap-3">
+        <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-3">
           <h3 className="shrink-0 text-base font-semibold text-ink">
             How this is counted
           </h3>
@@ -238,7 +238,7 @@ export default function SwitchersPortabilityPanel({ portability }: Props) {
 
         {/* Kept short: this row is full-width under the chart, so every line it
             takes is a line the bars lose on a 720px-tall screen. */}
-        <div className="mt-2.5 grid grid-cols-3 gap-5 text-[11px] leading-snug text-muted">
+        <div className="mt-2.5 grid grid-cols-1 gap-4 text-[11px] leading-snug text-muted md:grid-cols-3 md:gap-5">
           <div>
             <p className="font-medium text-ink">Titles are merged first</p>
             <p className="mt-0.5">

@@ -38,7 +38,7 @@ export default function SkillsPanel({ skills }: Props) {
   const top = rows[0]
 
   return (
-    <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
+    <div className="flex min-h-screen w-full flex-col px-5 pb-10 pt-20 md:h-full md:min-h-0 md:px-10 md:pb-5 md:pt-24 lg:px-14">
       <header data-anim className="shrink-0 pb-3">
         <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
           Skills
@@ -48,11 +48,11 @@ export default function SkillsPanel({ skills }: Props) {
         </h2>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-5 gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-5">
         {/* GRAPH */}
         <div
           data-anim
-          className="col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface p-5"
+          className="col-span-1 md:col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface p-5"
         >
           <div className="shrink-0">
             <h3 className="text-base font-semibold text-ink">
@@ -78,7 +78,7 @@ export default function SkillsPanel({ skills }: Props) {
             {rows.map((r) => (
               <div key={r.skill} className="flex items-center gap-3">
                 <span
-                  className="w-32 shrink-0 truncate text-[12px] font-medium text-ink"
+                  className="w-20 md:w-32 shrink-0 truncate text-[12px] font-medium text-ink"
                   title={r.skill}
                 >
                   {r.skill}
@@ -97,7 +97,7 @@ export default function SkillsPanel({ skills }: Props) {
                     ) : null
                   )}
                 </div>
-                <span className="w-20 shrink-0 text-right font-mono text-[11px] text-ink">
+                <span className="w-12 md:w-20 shrink-0 text-right font-mono text-[11px] text-ink">
                   {r.total.toLocaleString()}
                 </span>
               </div>
@@ -108,7 +108,7 @@ export default function SkillsPanel({ skills }: Props) {
         {/* EXPLANATION */}
         <div
           data-anim
-          className="col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface p-5"
+          className="col-span-1 md:col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface p-5"
         >
           <h3 className="shrink-0 text-base font-semibold text-ink">
             What you are looking at
@@ -166,7 +166,7 @@ export default function SkillsPanel({ skills }: Props) {
         data-anim
         className="mt-4 shrink-0 rounded-xl border border-line bg-surface px-6 py-4"
       >
-        <div className="flex items-baseline gap-3">
+        <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-3">
           <h3 className="shrink-0 text-base font-semibold text-ink">
             This covers a small part of the market
           </h3>
@@ -176,7 +176,7 @@ export default function SkillsPanel({ skills }: Props) {
           </p>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-6 text-[12px] leading-relaxed text-muted">
+        <div className="mt-3 grid grid-cols-1 gap-4 text-[12px] leading-relaxed text-muted md:grid-cols-3 md:gap-6">
           <div>
             <p className="font-medium text-ink">
               1. We match against a fixed word list

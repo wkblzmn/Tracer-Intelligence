@@ -105,8 +105,8 @@ export default function HeroPanel({ metrics, geography }: Props) {
     // Full-height columns, matching the rest of the story. Previously one wide
     // block plus a map, which sliced mid-scroll the way the seekers intro did.
     // pt-24 clears the fixed nav, which takes up no layout space.
-    <div className="flex h-full w-full flex-col pt-24">
-      <div className="grid min-h-0 flex-1 grid-cols-3 divide-x divide-line">
+    <div className="flex min-h-screen w-full flex-col pt-20 md:h-full md:min-h-0 md:pt-24">
+      <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-line md:grid-cols-3 md:divide-x md:divide-y-0">
         {/* ---- column 1: who we are and what this is ---- */}
         <div
           data-anim
@@ -162,7 +162,7 @@ export default function HeroPanel({ metrics, geography }: Props) {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 border-t border-line pt-6">
+          <div className="grid grid-cols-1 gap-3 border-t border-line pt-6 md:grid-cols-2">
             {cards.map((c) => (
               <div
                 key={c.label}

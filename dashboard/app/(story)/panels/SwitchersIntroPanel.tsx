@@ -41,8 +41,8 @@ export default function SwitchersIntroPanel() {
   ]
 
   return (
-    <div className="flex h-full w-full flex-col pt-24">
-      <div className="grid min-h-0 flex-1 grid-cols-3 divide-x divide-line">
+    <div className="flex min-h-screen w-full flex-col pt-20 md:h-full md:min-h-0 md:pt-24">
+      <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-line md:grid-cols-3 md:divide-x md:divide-y-0">
         {/* ---- column 1: the framing ---- */}
         <div
           data-anim

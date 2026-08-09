@@ -34,16 +34,16 @@ export default function GeographyPanel({ geography }: Props) {
   const hubs = (geography?.hubs ?? []).slice(0, 4)
 
   return (
-    <div className="flex h-full w-full flex-col px-16 pb-10 pt-24 lg:px-24">
+    <div className="flex min-h-screen w-full flex-col px-5 pb-10 pt-20 md:h-full md:min-h-0 md:px-16 md:pt-24 lg:px-24">
       <PanelHeader
         audience="Geography"
         question="Which districts specialise, and in what."
         note="Multiples are relative to a district's overall hiring — how much it over-indexes on a field versus the national norm. Dhaka sets the baseline and is excluded."
       />
 
-      <div className="mt-5 grid min-h-0 flex-1 grid-cols-3 gap-4">
+      <div className="mt-5 grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-3">
         {/* ---- specialization grid: the lead ---- */}
-        <div className="col-span-2 flex flex-col rounded-lg border border-line bg-surface p-5">
+        <div className="col-span-1 md:col-span-2 flex flex-col rounded-lg border border-line bg-surface p-5">
           <p className="text-sm font-medium text-ink">
             What each district over-indexes on
           </p>
@@ -52,7 +52,7 @@ export default function GeographyPanel({ geography }: Props) {
             field. Longer = more concentrated in that work.
           </p>
 
-          <div className="mt-4 grid min-h-0 flex-1 grid-cols-2 gap-x-8 gap-y-3 overflow-hidden">
+          <div className="mt-4 grid min-h-0 flex-1 grid-cols-1 gap-x-8 gap-y-3 overflow-hidden md:grid-cols-2">
             {districts.map((d) => {
               const top = d.sectors[0]
               const maxLq = Math.max(...d.sectors.map((s) => s.lq), 1)
@@ -68,7 +68,7 @@ export default function GeographyPanel({ geography }: Props) {
                   </div>
                   {/* the district's single strongest specialisation, named */}
                   <div className="mt-1.5 flex items-center gap-2">
-                    <span className="w-28 shrink-0 truncate text-[11px] text-muted">
+                    <span className="w-20 md:w-28 shrink-0 truncate text-[11px] text-muted">
                       {top.sector}
                     </span>
                     <div className="h-1.5 flex-1 rounded-sm bg-[#ECEBF4]">

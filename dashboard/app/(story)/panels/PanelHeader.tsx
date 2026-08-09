@@ -16,7 +16,11 @@ export default function PanelHeader({
   note?: string
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-8 border-b border-line pb-4">
+    // The note sits beside the question from md up and beneath it below that.
+    // `shrink-0` is what keeps it from being squeezed on a wide screen, so it
+    // only applies there — left on at 375px it refused to narrow and pushed
+    // 123px off the side of the page.
+    <div className="flex flex-col gap-2 border-b border-line pb-4 md:flex-row md:items-baseline md:justify-between md:gap-8">
       <div>
         <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
           {audience}
@@ -26,7 +30,7 @@ export default function PanelHeader({
         </h2>
       </div>
       {note && (
-        <p className="max-w-md shrink-0 text-right text-xs leading-relaxed text-muted">
+        <p className="text-xs leading-relaxed text-muted md:max-w-md md:shrink-0 md:text-right">
           {note}
         </p>
       )}

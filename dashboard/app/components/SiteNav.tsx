@@ -15,8 +15,10 @@ const NAV = [
   { href: "/geography", label: "Geography" },
 ]
 
+// shrink-0 so the pills keep their size inside the scrolling row below rather
+// than being squeezed into unreadable slivers on a phone.
 const PILL =
-  "nav-pill rounded-full px-3.5 py-1.5 text-[11px] uppercase tracking-widest transition-colors"
+  "nav-pill shrink-0 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest transition-colors md:px-3.5 md:text-[11px]"
 
 export default function SiteNav() {
   const pathname = usePathname()
@@ -40,17 +42,20 @@ export default function SiteNav() {
 
   return (
     <nav className="sticky top-0 z-20 border-b border-line bg-canvas/80 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
         {/* Same mark as the story: "Tracer", Fraunces, weight 500. */}
         <Link
           href="/"
           style={{ fontFamily: "var(--font-wordmark), serif", fontWeight: 500 }}
-          className="text-2xl leading-none text-ink transition-colors hover:text-brand"
+          className="shrink-0 text-xl leading-none text-ink transition-colors hover:text-brand md:text-2xl"
         >
           Tracer
         </Link>
 
-        <div className="flex items-center gap-2">
+        {/* Five pills plus the wordmark do not fit 375px. The row scrolls
+            sideways under a fixed wordmark rather than wrapping, which would
+            make the sticky nav two lines tall on every page. */}
+        <div className="no-scrollbar flex items-center gap-2 overflow-x-auto md:overflow-x-visible">
           {isSearch ? (
             <>
               <button

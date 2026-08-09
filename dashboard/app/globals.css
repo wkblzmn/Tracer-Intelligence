@@ -54,14 +54,30 @@ body {
   );
 }
 
-/* Horizontal story track.
+/* Horizontal story track — from 768px up only.
    One panel == the live viewport width EXCLUDING the vertical scrollbar.
    `100vw` counts the scrollbar, so w-screen panels are ~15px too wide and
    every panel loses its right edge. --panel-w is recomputed from
    documentElement.clientWidth on every ScrollTrigger refresh (which fires on
    resize), so this tracks any screen size instead of being measured once.
-   The 100vw fallback only applies before hydration. */
-.story-panel { width: var(--panel-w, 100vw); }
+   The 100vw fallback only applies before hydration.
+
+   Below 768px there is no track: the pin is never created (see the
+   gsap.matchMedia in (story)/page.tsx) and the panels are ordinary
+   full-width sections stacked vertically. A panel must be free to be taller
+   than the viewport there — a phone in portrait cannot fit a panel built for
+   1280x720, and forcing it to try is what cropped up to 1,664px of content off
+   the bottom of every panel. */
+.story-panel { width: 100%; }
+
+@media (min-width: 768px) {
+  .story-panel { width: var(--panel-w, 100vw); }
+}
+
+/* Horizontal pill row on small screens: scrollable rather than wrapped, so the
+   nav stays one line tall and never pushes the panels down. */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }

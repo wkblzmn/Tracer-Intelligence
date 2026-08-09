@@ -22,7 +22,7 @@ export default function SalaryBySector({ rows }: { rows: Row[] }) {
         const disclosure = Math.round((r.disclosed / r.total) * 100)
         return (
           <div key={r.sector} className="flex items-center gap-3">
-            <span className="w-56 shrink-0 truncate text-[13px] text-ink" title={r.sector}>
+            <span className="w-28 md:w-56 shrink-0 truncate text-[13px] text-ink" title={r.sector}>
               {r.sector}
             </span>
             <div className="relative h-2.5 flex-1 rounded bg-line/60">
@@ -36,10 +36,10 @@ export default function SalaryBySector({ rows }: { rows: Row[] }) {
                 title={`median Tk ${r.p50.toLocaleString()}`}
               />
             </div>
-            <span className="nums w-32 shrink-0 text-right text-xs text-ink">
+            <span className="nums w-20 md:w-32 shrink-0 text-right text-xs text-ink">
               ৳{fmtK(r.p25)}–{fmtK(r.p75)} <span className="font-semibold">· {fmtK(r.p50)}</span>
             </span>
-            <span className="nums w-24 shrink-0 text-right text-[11px] text-muted">
+            <span className="nums w-14 md:w-24 shrink-0 text-right text-[11px] text-muted">
               {disclosure}% of {r.total}
             </span>
           </div>

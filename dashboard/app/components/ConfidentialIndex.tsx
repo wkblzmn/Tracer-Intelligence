@@ -12,7 +12,7 @@ export default function ConfidentialIndex({ rows }: { rows: Row[] }) {
     <div className="space-y-2.5">
       {rows.map((r) => (
         <div key={r.sector} className="flex items-center gap-3">
-          <span className="w-56 shrink-0 truncate text-[13px] text-ink" title={r.sector}>
+          <span className="w-28 md:w-56 shrink-0 truncate text-[13px] text-ink" title={r.sector}>
             {r.sector}
           </span>
           <div className="h-2.5 flex-1 rounded bg-line/60 overflow-hidden">
@@ -24,7 +24,7 @@ export default function ConfidentialIndex({ rows }: { rows: Row[] }) {
           <span className="nums w-14 shrink-0 text-right text-xs font-semibold text-ink">
             {r.share}%
           </span>
-          <span className="nums w-24 shrink-0 text-right text-[11px] text-muted">
+          <span className="nums w-14 md:w-24 shrink-0 text-right text-[11px] text-muted">
             {r.confidential} of {r.total}
           </span>
         </div>

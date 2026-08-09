@@ -58,7 +58,7 @@ export default async function SkillsPage() {
             <div key={i} className="flex items-center gap-3 rounded-lg px-2 py-2">
               <span className="w-6 text-right text-xs tabular-nums text-muted">{i + 1}</span>
               <span className="flex-1 truncate text-sm font-medium text-ink">{s.skill}</span>
-              <div className="flex items-center gap-2 w-40">
+              <div className="flex items-center gap-2 w-24 md:w-40">
                 <div className="flex-1 bg-line rounded h-2 overflow-hidden flex">
                   <div className="h-2" style={{ width: `${(s.bdjobs / max) * 100}%`, backgroundColor: SOURCE_COLORS.bdjobs }} />
                   <div className="h-2" style={{ width: `${(s.skilljobs / max) * 100}%`, backgroundColor: SOURCE_COLORS.skilljobs }} />

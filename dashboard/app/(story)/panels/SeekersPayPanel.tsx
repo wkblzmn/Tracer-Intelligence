@@ -64,8 +64,8 @@ export default function SeekersPayPanel({ opportunity }: Props) {
   }))
 
   return (
-    <div className="flex h-full w-full flex-col pt-24">
-      <div className="grid min-h-0 flex-1 grid-cols-3 divide-x divide-line">
+    <div className="flex min-h-screen w-full flex-col pt-20 md:h-full md:min-h-0 md:pt-24">
+      <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-line md:grid-cols-3 md:divide-x md:divide-y-0">
         {/* ---- column 1: how to read the thing next to it ---- */}
         <div
           data-anim
@@ -135,9 +135,14 @@ export default function SeekersPayPanel({ opportunity }: Props) {
         {/* ---- columns 2-3: the chart itself, given room ---- */}
         <div
           data-anim
-          className="col-span-2 flex min-h-0 flex-col px-12 pb-10 pt-8 lg:px-14"
+          className="col-span-1 md:col-span-2 flex min-h-0 flex-col px-12 pb-10 pt-8 lg:px-14"
         >
-          <div className="min-h-0 flex-1">
+          {/* ResponsiveContainer is height:100% of this box. On desktop the box
+              is flex-1 inside a fixed-height panel, so that resolves. With the
+              panel's height content-driven on a phone there is nothing to take
+              100% of and the chart collapsed to 73px, so it gets an explicit
+              height there and hands the job back to flex at md. */}
+          <div className="h-[22rem] md:h-auto md:min-h-0 md:flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 8, right: 24, bottom: 28, left: 12 }}>
                 <XAxis

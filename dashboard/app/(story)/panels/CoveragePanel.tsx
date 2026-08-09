@@ -51,7 +51,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
     [...sectors].sort((a, b) => b.share[src] - a.share[src]).slice(0, 3)
 
   return (
-    <div className="flex h-full w-full flex-col px-10 pb-5 pt-24 lg:px-14">
+    <div className="flex min-h-screen w-full flex-col px-5 pb-10 pt-20 md:h-full md:min-h-0 md:px-10 md:pb-5 md:pt-24 lg:px-14">
       <header data-anim className="shrink-0 pb-3">
         <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
           Coverage &amp; Method
@@ -61,11 +61,11 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
         </h2>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-5 gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-5">
         {/* GRAPH */}
         <div
           data-anim
-          className="col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-3.5"
+          className="col-span-1 md:col-span-3 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-3.5"
         >
           <div className="shrink-0">
             <h3 className="text-base font-semibold leading-tight text-ink">
@@ -100,7 +100,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
                   {topFor(src).map((s) => (
                     <div key={s.sector} className="flex items-center gap-2">
                       <span
-                        className="w-40 shrink-0 truncate text-[11px] text-ink"
+                        className="w-24 md:w-40 shrink-0 truncate text-[11px] text-ink"
                         title={s.sector}
                       >
                         {s.sector}
@@ -114,7 +114,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
                           }}
                         />
                       </div>
-                      <span className="w-20 shrink-0 text-right font-mono text-[10px] text-muted">
+                      <span className="w-12 md:w-20 shrink-0 text-right font-mono text-[10px] text-muted">
                         {s.share[src].toFixed(1)}%
                       </span>
                     </div>
@@ -128,7 +128,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
         {/* EXPLANATION */}
         <div
           data-anim
-          className="col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
+          className="col-span-1 md:col-span-2 flex min-h-0 flex-col rounded-xl border border-line bg-surface px-5 py-4"
         >
           <h3 className="shrink-0 text-base font-semibold text-ink">
             Why three boards, not one
@@ -184,7 +184,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
         data-anim
         className="mt-4 shrink-0 rounded-xl border border-line bg-surface px-6 py-4"
       >
-        <div className="flex items-baseline gap-3">
+        <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:gap-3">
           <h3 className="shrink-0 text-base font-semibold text-ink">
             How this is collected, and what we will not do
           </h3>
@@ -193,7 +193,7 @@ export default function CoveragePanel({ sourceMatrix, momentum }: Props) {
           </p>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-6 text-[12px] leading-relaxed text-muted">
+        <div className="mt-3 grid grid-cols-1 gap-4 text-[12px] leading-relaxed text-muted md:grid-cols-3 md:gap-6">
           <div>
             <p className="font-medium text-ink">We read the boards every day</p>
             <p className="mt-0.5">

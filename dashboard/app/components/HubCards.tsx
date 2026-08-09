@@ -15,7 +15,7 @@ export default function HubCards({ hubs }: { hubs: Hub[] }) {
             <div className="mt-3 space-y-2">
               {h.sectors.map((s) => (
                 <div key={s.sector} className="flex items-center gap-2">
-                  <span className="w-40 truncate text-[13px] text-ink" title={s.sector}>{s.sector}</span>
+                  <span className="w-24 md:w-40 truncate text-[13px] text-ink" title={s.sector}>{s.sector}</span>
                   <div className="flex-1 h-2 rounded bg-line overflow-hidden">
                     <div className="h-2 rounded" style={{ width: `${(s.count / max) * 100}%`, backgroundColor: "#C2683C" }} />
                   </div>

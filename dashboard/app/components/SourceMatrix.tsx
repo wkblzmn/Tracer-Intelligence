@@ -64,7 +64,7 @@ export default function SourceMatrix({ sectors, totals }: Props) {
         <tbody>
           {sectors.map((row) => (
             <tr key={row.sector} className="group">
-              <td className="sticky left-0 z-10 bg-surface group-hover:bg-brand-soft border-b border-r border-line px-3 py-0 max-w-60">
+              <td className="sticky left-0 z-10 bg-surface group-hover:bg-brand-soft border-b border-r border-line px-3 py-0 max-w-28 md:w-60">
                 <div className="truncate text-[13px] text-ink" title={row.sector}>{row.sector}</div>
               </td>
               {SOURCES.map((s) => {

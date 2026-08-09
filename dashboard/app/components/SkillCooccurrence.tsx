@@ -43,7 +43,7 @@ export default function SkillCooccurrence({ skills, pairs }: { skills: Skill[]; 
         <tbody>
           {labels.map((row) => (
             <tr key={row}>
-              <td className="sticky left-0 z-10 bg-surface border-r border-line pr-2 py-0 text-right text-[11px] text-ink whitespace-nowrap max-w-37.5">
+              <td className="sticky left-0 z-10 bg-surface border-r border-line pr-2 py-0 text-right text-[11px] text-ink whitespace-nowrap max-w-20 md:w-37.5">
                 <div className="truncate" title={row}>{row}</div>
               </td>
               {labels.map((col) => {

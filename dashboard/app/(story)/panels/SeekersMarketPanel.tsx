@@ -94,7 +94,7 @@ function Bar({
   return (
     <div className="flex items-center gap-3">
       <span
-        className="w-28 shrink-0 truncate text-xs capitalize text-muted"
+        className="w-20 md:w-28 shrink-0 truncate text-xs capitalize text-muted"
         title={label}
       >
         {label}
@@ -105,7 +105,7 @@ function Bar({
           style={{ width: `${Math.max(2, Math.min(100, fraction * 100))}%` }}
         />
       </div>
-      <span className="w-11 shrink-0 text-right font-mono text-xs text-ink">
+      <span className="w-9 md:w-11 shrink-0 text-right font-mono text-xs text-ink">
         {value}
         {suffix}
       </span>
@@ -134,7 +134,7 @@ export default function SeekersMarketPanel({
   const leader = top6[0]
 
   return (
-    <div className="flex h-full w-full flex-col px-10 pb-8 pt-24 lg:px-14">
+    <div className="flex min-h-screen w-full flex-col px-5 pb-10 pt-20 md:h-full md:min-h-0 md:px-10 md:pb-8 md:pt-24 lg:px-14">
       <header data-anim className="shrink-0 pb-5">
         <p className="text-[11px] uppercase tracking-[0.18em] text-brand">
           For job seekers
@@ -144,7 +144,7 @@ export default function SeekersMarketPanel({
         </h2>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2">
         {/* ---- tall: timing ---- */}
         <Card
           className="row-span-2"
@@ -167,12 +167,12 @@ export default function SeekersMarketPanel({
 
         {/* ---- wide: roles ---- */}
         <Card
-          className="col-span-2"
+          className="col-span-1 md:col-span-2"
           heading="These are the jobs actually being advertised."
           explain="Not job titles in general — the specific roles employers are hiring for right now. Spellings are merged and Bangla titles matched to their English equivalent, so ড্রাইভার and Driver count as one job rather than two."
           note="Number of open adverts per role, across all three job boards."
         >
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2.5">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-2.5 md:grid-cols-2">
             {roles.map((r) => (
               <Bar
                 key={r.role}
@@ -186,7 +186,7 @@ export default function SeekersMarketPanel({
 
         {/* ---- wide: composition ---- */}
         <Card
-          className="col-span-2"
+          className="col-span-1 md:col-span-2"
           heading={
             leader
               ? `Nearly ${Math.round(leader.share)}% of all openings are one field.`
@@ -212,7 +212,7 @@ export default function SeekersMarketPanel({
               />
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-x-8 gap-y-1.5">
+            <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-1.5 md:grid-cols-2">
               {top6.map((c, i) => (
                 <div key={c.category} className="flex items-center gap-2">
                   <span

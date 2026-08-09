@@ -101,6 +101,11 @@ const NAV_SECTIONS = (() => {
   })
 })()
 
+// Height of the fixed nav on small screens, so a jump to a section lands below
+// it rather than under it. Only used on the no-track path; the pinned track
+// scrolls the window, not an element, so it needs no offset.
+const NAV_OFFSET = 56
+
 export default function StoryPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
@@ -138,7 +143,19 @@ export default function StoryPage() {
     })
   }, [])
 
-  // Horizontal scroll mechanic.
+  // Horizontal scroll mechanic — 768px and up ONLY.
+  //
+  // Everything below is wrapped in gsap.matchMedia, so on a phone the pin, the
+  // scrub, the snapping and the containerAnimation entrance triggers are never
+  // created at all. That is deliberate rather than cosmetic: the pin forces
+  // every panel to exactly the viewport height, and a panel laid out for
+  // 1280x720 cannot fit a 375x812 portrait screen — up to 1,664px of content
+  // was being cropped off the bottom of a single panel. Below the breakpoint
+  // the panels are plain vertical sections whose height is their content.
+  //
+  // matchMedia also handles the boundary crossing: rotate a tablet or drag a
+  // desktop window narrow and GSAP reverts the whole context, then rebuilds it
+  // on the way back, so neither layout inherits the other's inline styles.
   useEffect(() => {
     const container = containerRef.current
     const track = trackRef.current
@@ -193,7 +210,9 @@ export default function StoryPage() {
     }
     window.addEventListener("resize", onResize)
 
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia(container)
+
+    mm.add("(min-width: 768px)", () => {
       // Same measurement the panels are sized from, so the track and the
       // scroll distance can never disagree.
       const distance = () => track.scrollWidth - document.documentElement.clientWidth
@@ -304,11 +323,18 @@ export default function StoryPage() {
           })
         })
       }
-    }, container)
+      // matchMedia's callback is itself a gsap.context, so every tween and
+      // ScrollTrigger created above is reverted automatically when the query
+      // stops matching. Clearing the ref matters too: the nav uses its presence
+      // to decide whether to jump along the track or scroll to a section.
+      return () => {
+        stRef.current = null
+      }
+    })
 
     return () => {
       window.removeEventListener("resize", onResize)
-      ctx.revert()
+      mm.revert()
     }
   }, [])
 
@@ -330,7 +356,13 @@ export default function StoryPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const Panel = p.Component as React.ComponentType<any> | null
         return (
-          <section key={p.id} className="story-panel h-full shrink-0 bg-canvas">
+          <section
+            key={p.id}
+            // id so the nav can reach it by element on small screens, where
+            // there is no track position to scroll to.
+            id={`panel-${p.id}`}
+            className="story-panel bg-canvas md:h-full md:shrink-0"
+          >
             {Panel ? (
               <Panel
                 metrics={data?.metrics ?? null}
@@ -345,7 +377,10 @@ export default function StoryPage() {
                 sourceMatrix={data?.sourceMatrix ?? null}
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center">
+              // min-h on small screens because with the panel's height
+              // content-driven, an unbuilt panel is 84px of blank canvas
+              // wedged between two full sections rather than a held beat.
+              <div className="flex min-h-[60vh] flex-col items-center justify-center md:h-full md:min-h-0">
                 <span className="font-mono text-sm tracking-widest text-muted/70">
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -373,9 +408,22 @@ export default function StoryPage() {
 
   // Panels are evenly spaced along the trigger's scroll range, so panel i
   // sits at start + (end - start) * (i / (panels - 1)).
+  //
+  // With no track — below md, where the pin is never built — that arithmetic
+  // has nothing to measure, so the jump goes to the section itself. Same
+  // gesture, same easing, sourced from wherever the panel actually is.
   const goToPanel = (i: number) => {
     const st = stRef.current
-    if (!st) return
+    if (!st) {
+      const el = document.getElementById(`panel-${PANELS[i]?.id}`)
+      if (!el) return
+      gsap.to(window, {
+        scrollTo: { y: el, offsetY: NAV_OFFSET, autoKill: false },
+        duration: 0.8,
+        ease: "power2.inOut",
+      })
+      return
+    }
     const y = st.start + (st.end - st.start) * (i / (PANELS.length - 1))
     gsap.to(window, {
       scrollTo: { y, autoKill: false },
@@ -391,25 +439,32 @@ export default function StoryPage() {
       )}
 
       {/* Nav sits above the pinned track. */}
-      <nav className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-canvas/80 px-8 py-5 backdrop-blur">
+      {/* Nav sits above the pinned track. On a phone the wordmark stays put and
+          the pill row scrolls sideways under it: ten pills plus a wordmark plus
+          Search cannot fit 375px, and wrapping them would make the nav three
+          lines tall and push every panel down by that much. */}
+      <nav className="fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-3 border-b border-line bg-canvas/80 px-4 py-3 backdrop-blur md:px-8 md:py-5">
         {/* "Tracer" alone, not "Tracer Int." — the hero states the full name
             immediately below, and "Int." reads as International to most
             people, which is worse than being longer. */}
         <button
           onClick={() => goToPanel(0)}
-          className="text-2xl leading-none text-ink transition-colors hover:text-brand"
+          className="shrink-0 text-xl leading-none text-ink transition-colors hover:text-brand md:text-2xl"
           style={{ fontFamily: "var(--font-wordmark), serif", fontWeight: 500 }}
         >
           Tracer
         </button>
 
-        <div ref={navRef} className="flex items-center gap-2">
+        <div
+          ref={navRef}
+          className="no-scrollbar flex items-center gap-2 overflow-x-auto md:overflow-x-visible"
+        >
           {NAV_SECTIONS.map((s) => (
             <button
               key={s.id}
               data-nav={s.id}
               onClick={() => goToPanel(s.start)}
-              className="nav-pill rounded-full px-3.5 py-1.5 text-[11px] uppercase tracking-widest text-ink"
+              className="nav-pill shrink-0 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest text-ink md:px-3.5 md:text-[11px]"
             >
               {s.label}
             </button>
@@ -421,7 +476,7 @@ export default function StoryPage() {
           <button
             data-nav="overview"
             onClick={goToOverview}
-            className="nav-pill rounded-full px-3.5 py-1.5 text-[11px] uppercase tracking-widest text-ink"
+            className="nav-pill shrink-0 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest text-ink md:px-3.5 md:text-[11px]"
           >
             Overview
           </button>
@@ -433,7 +488,7 @@ export default function StoryPage() {
             href="/search"
             target="_blank"
             rel="noopener"
-            className="ml-2 text-[11px] uppercase tracking-widest text-muted transition-colors hover:text-ink"
+            className="ml-2 shrink-0 text-[10px] uppercase tracking-widest text-muted transition-colors hover:text-ink md:text-[11px]"
           >
             Search
           </a>
@@ -441,8 +496,18 @@ export default function StoryPage() {
       </nav>
 
       <main>
-        <div ref={containerRef} className="h-screen overflow-hidden">
-          <div ref={trackRef} className="flex h-full w-fit">
+        {/* Below md this is an ordinary block containing a vertical column of
+            full-width sections — no fixed height, nothing hidden, so a panel
+            can be as tall as its content. From md up it is the pinned viewport
+            window with the track sliding inside it, exactly as before. */}
+        <div
+          ref={containerRef}
+          className="md:h-screen md:overflow-hidden"
+        >
+          <div
+            ref={trackRef}
+            className="flex w-full flex-col md:h-full md:w-fit md:flex-row"
+          >
             {panelEls}
           </div>
         </div>
