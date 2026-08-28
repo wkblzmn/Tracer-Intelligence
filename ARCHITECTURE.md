@@ -187,8 +187,8 @@ structural idea to remember:
 
 1. Fetches all 18 endpoints in parallel, each failing independently into `null`
    so one bad endpoint can't blank the page.
-2. Declares `PANELS` — 13 panels in order. `Component: null` renders a
-   placeholder, which is why "For students" is a numbered blank.
+2. Declares `PANELS` — 12 panels in order. `Component: null` renders a
+   numbered placeholder, so a panel can be declared before it is built.
 3. Pins the container and scrubs the track sideways with GSAP — **only at
    ≥768px**, via `gsap.matchMedia`. Below that the panels are ordinary vertical
    sections. The comment at line 146 explains why in terms of actual cropped
@@ -256,7 +256,6 @@ call sites); `lib/chartTheme.ts` centralises chart styling.
 - `title_map` has no loader in this repo (breaks two endpoints on a fresh DB).
 - `bdjobs_categories` table is live but unused — `bdjobs.py` hardcodes the
   `CATEGORIES` dict.
-- The "For students" panel is declared but unbuilt.
 - `dashboard/README.md` is still create-next-app boilerplate.
 - `Home.pdf` (519KB) and five unused Next.js starter SVGs in `dashboard/public/`
   are tracked but referenced by nothing.

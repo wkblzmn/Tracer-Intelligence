@@ -880,8 +880,9 @@ can't silently break a panel. `safeFetch` catches per-endpoint: a non-ok status,
 bad JSON, or empty body yields `null` for that key instead of rejecting the whole
 batch and blanking the page.
 
-**`PANELS`** — 13 entries, in order. `Component: null` renders a numbered
-placeholder.
+**`PANELS`** — 12 entries, in order. `Component: null` renders a numbered
+placeholder, so a panel can be declared before it is built. Nothing currently
+uses it.
 
 | # | id | Nav label | nav | Component |
 |---:|---|---|---|---|
@@ -892,12 +893,11 @@ placeholder.
 | 5 | `switchers-intro` | For switchers | ✓ | SwitchersIntroPanel |
 | 6 | `switchers-portability` | For switchers | | SwitchersPortabilityPanel |
 | 7 | `switchers` | For switchers | | SwitchersPanel |
-| 8 | `students` | For students | ✓ | **null — unbuilt** |
-| 9 | `skills` | Skills | ✓ | SkillsPanel |
-| 10 | `insights` | Insights | ✓ | InsightsPanel |
-| 11 | `geography-intro` | Geography | ✓ | GeographyIntroPanel |
-| 12 | `geography` | Geography | | GeographyPanel |
-| 13 | `coverage` | Coverage & Method | ✓ | CoveragePanel |
+| 8 | `skills` | Skills | ✓ | SkillsPanel |
+| 9 | `insights` | Insights | ✓ | InsightsPanel |
+| 10 | `geography-intro` | Geography | ✓ | GeographyIntroPanel |
+| 11 | `geography` | Geography | | GeographyPanel |
+| 12 | `coverage` | Coverage & Method | ✓ | CoveragePanel |
 
 Portability comes **before** momentum deliberately: it stands on 120 days of
 first-party fields, so the section leads with what holds and follows with the
@@ -1216,7 +1216,6 @@ date.
 
 **Gaps — things simply not done:**
 
-- The "For students" panel is declared but unbuilt (renders a placeholder).
 - `bdjobs_categories` table is live but unused.
 - `middlewares.py` is untouched Scrapy boilerplate, not enabled.
 - `probe.py` is a scratch script.

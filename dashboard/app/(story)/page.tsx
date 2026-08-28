@@ -71,7 +71,6 @@ const PANELS = [
     Component: SwitchersPortabilityPanel,
   },
   { id: "switchers", label: "For switchers", nav: false, Component: SwitchersPanel },
-  { id: "students", label: "For students", nav: true, Component: null },
   { id: "skills", label: "Skills", nav: true, Component: SkillsPanel },
   { id: "insights", label: "Insights", nav: true, Component: InsightsPanel },
   { id: "geography-intro", label: "Geography", nav: true, Component: GeographyIntroPanel },
